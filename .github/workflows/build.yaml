@@ -48,8 +48,11 @@ jobs:
           chmod +x *.sh
           sudo ./install_alist.sh
           sudo ./install_web.sh
-          sudo ./install_gomobile.sh
-          sudo ./install_aar.sh
+
+          go install golang.org/x/mobile/cmd/gomobile@latest
+          gomobile init 
+          go get golang.org/x/mobile/bind
+          sudo ./install_aar.sh all
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2.4.2
