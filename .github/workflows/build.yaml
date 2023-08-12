@@ -34,10 +34,10 @@ jobs:
       - name: Build Alist-lib
         run: |
           cd alist-lib/scripts
-          ./install_alist.sh
-          ./install_web.sh
-          ./install_gomobile.sh
-          ./install_aar.sh
+          sudo ./install_alist.sh
+          sudo ./install_web.sh
+          sudo ./install_gomobile.sh
+          sudo ./install_aar.sh
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2.4.2

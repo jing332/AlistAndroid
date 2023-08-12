@@ -1,7 +1,9 @@
 package com.github.jing332.alistandroid
 
 import android.app.Application
+import android.content.Intent
 import android.os.Looper
+import com.github.jing332.alistandroid.service.AlistService
 import java.net.InetAddress
 import java.net.UnknownHostException
 
@@ -14,6 +16,8 @@ class App : Application() {
         application = this
 
         CrashHandler(this)
+
+        startService(Intent(this, AlistService::class.java))
     }
 
     companion object {

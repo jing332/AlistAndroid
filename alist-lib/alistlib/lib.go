@@ -26,13 +26,13 @@ type MyHook struct {
 }
 
 func (h MyHook) Fire(entry *log.Entry) error {
-	h.cb.onLog(int16(entry.Level), entry.Message)
+	h.cb.OnLog(int16(entry.Level), entry.Message)
 
 	return nil
 }
 
 type LogCallback interface {
-	onLog(level int16, msg string)
+	OnLog(level int16, msg string)
 }
 
 func Init(cb LogCallback) {
