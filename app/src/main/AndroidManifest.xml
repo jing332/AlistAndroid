@@ -39,6 +39,11 @@
         android:usesCleartextTraffic="true"
         tools:ignore="UnusedAttribute">
 
+        <service
+            android:name=".service.AlistService"
+            android:exported="true"
+            tools:ignore="ExportedService" />
+
 
         <provider
             android:name="androidx.core.content.FileProvider"

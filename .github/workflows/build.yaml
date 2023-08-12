@@ -8,6 +8,12 @@ on:
       - "*.md"
 
   workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: "Enable debug mode"
+        required: false
+        default: false
 
 jobs:
   build:
@@ -15,11 +21,16 @@ jobs:
 
     env:
       output: "${{ github.workspace }}/app/build/outputs/apk/release"
-      mapping: "${{ github.workspace }}/app/build/outputs/mapping"
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        # if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        with:
+          detached: true    
 
       - uses: actions/setup-java@v3
         with:
