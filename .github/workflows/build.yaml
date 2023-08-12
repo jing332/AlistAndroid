@@ -46,13 +46,13 @@ jobs:
         run: |
           cd alist-lib/scripts
           chmod +x *.sh
-          sudo ./install_alist.sh
-          sudo ./install_web.sh
+          ./install_alist.sh
+          ./install_web.sh
 
           go install golang.org/x/mobile/cmd/gomobile@latest
           gomobile init 
           go get golang.org/x/mobile/bind
-          sudo ./install_aar.sh all
+          ./install_aar.sh all
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2.4.2
