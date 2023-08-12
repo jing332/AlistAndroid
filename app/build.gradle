@@ -1,7 +1,3 @@
-// 导入RandomKeyGenerator类，如果不使用RandomKeyGenerator，可以删除此行
-
-import com.github.megatronking.stringfog.plugin.StringFogMode
-import com.github.megatronking.stringfog.plugin.kg.RandomKeyGenerator
 
 plugins {
     id("com.android.application")
@@ -9,7 +5,6 @@ plugins {
     id("kotlin-parcelize")
     id("kotlinx-serialization")
     id("com.google.devtools.ksp")
-    id("stringfog")
     id("com.mikepenz.aboutlibraries.plugin")
 }
 static def releaseTime() {
@@ -18,10 +13,10 @@ static def releaseTime() {
 def version = "1." + releaseTime()
 def gitCommits = Integer.parseInt('git rev-list HEAD --count'.execute().text.trim())
 android {
-    namespace 'com.example.mixtts'
+    namespace 'com.github.jing332.alistandroid'
     compileSdk 34
     defaultConfig {
-        applicationId 'com.example.mixtts'
+        applicationId 'com.github.jing332.alistandroid'
         minSdkVersion 21
         targetSdk 34
         versionCode gitCommits
@@ -34,22 +29,6 @@ android {
         }
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-
-    stringfog {
-        // 必要：加解密库的实现类路径，需和上面配置的加解密算法库一致。
-        implementation 'com.github.megatronking.stringfog.xor.StringFogImpl'
-        // 可选：加密开关，默认开启。
-        enable true
-        // 可选：指定需加密的代码包路径，可配置多个，未指定将默认全部加密。
-//    fogPackages = ['com.xxx.xxx']
-        // 可选（3.0版本新增）：指定密钥生成器，默认使用长度8的随机密钥（每个字符串均有不同随机密钥）,
-        // 也可以指定一个固定的密钥：HardCodeKeyGenerator("This is a key")
-        kg new RandomKeyGenerator()
-        // 可选（4.0版本新增）：用于控制字符串加密后在字节码中的存在形式, 默认为base64，
-        // 也可以使用text或者bytes
-        mode StringFogMode.bytes
     }
 
     buildFeatures {
@@ -75,7 +54,7 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
-            manifestPlaceholders = [providerAuthor: "com.example.mixtts"]
+            manifestPlaceholders = [providerAuthor: "com.github.jing332.alistandroid"]
 
             minifyEnabled true
             shrinkResources true
@@ -85,12 +64,11 @@ android {
         debug {
             signingConfig signingConfigs.release
 
-            stringfog.enable false
             minifyEnabled false
 //            shrinkResources true
 //            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            manifestPlaceholders = [providerAuthor: "com.example.mixtts.debug"]
+            manifestPlaceholders = [providerAuthor: "com.github.jing332.alistandroid.debug"]
             applicationIdSuffix ".debug"
             versionNameSuffix "_debug"
 
@@ -146,8 +124,6 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
-    implementation("com.github.megatronking.stringfog:xor:5.0.0")
-
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
     implementation("com.mikepenz:aboutlibraries-core:${about_lib_version}")
@@ -186,7 +162,7 @@ dependencies {
 
 
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
-    implementation("androidx.navigation:navigation-compose:2.6.0")
+    implementation("androidx.navigation:navigation-compose:2.7.0")
 
     implementation 'androidx.activity:activity-compose:1.7.2'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1'

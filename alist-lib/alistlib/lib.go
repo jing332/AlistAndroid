@@ -1,4 +1,4 @@
-package androidlib
+package alistlib
 
 import (
 	"context"

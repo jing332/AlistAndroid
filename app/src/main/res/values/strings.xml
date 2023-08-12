@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Alist</string>
+
+    <string name="open_source_license">开源许可</string>
+    <string name="back">返回</string>
+    <string name="no_file_selected">未选择文件</string>
+    <string name="error">错误❌</string>
+</resources>

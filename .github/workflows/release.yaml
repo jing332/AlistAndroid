@@ -1,0 +1,63 @@
+name: Release
+
+on:
+    push:
+        branches:
+            - "master"
+        paths:
+            - "CHANGELOG.md"
+    workflow_dispatch:
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        env:
+          output: "${{ github.workspace }}/app/build/outputs/apk/release"
+        steps:
+            - uses: actions/checkout@v3
+              with:
+                fetch-depth: 0
+            - uses: actions/setup-java@v3
+              with:
+                  distribution: temurin
+                  java-version: 17
+
+            - name: Setup Gradle
+              uses: gradle/gradle-build-action@v2.4.2
+
+            - name: Init Signature
+              run: |
+                touch local.properties
+                echo ALIAS_NAME='${{ secrets.ALIAS_NAME }}' >> local.properties
+                echo ALIAS_PASSWORD='${{ secrets.ALIAS_PASSWORD }}' >> local.properties
+                echo KEY_PASSWORD='${{ secrets.KEY_PASSWORD }}' >> local.properties
+                echo KEY_PATH='./key.jks' >> local.properties
+                # 从Secrets读取无换行符Base64解码, 然后保存到到app/key.jks
+                echo ${{ secrets.KEY_STORE }} | base64 --decode > $GITHUB_WORKSPACE/app/key.jks
+
+            - name: Grant execute permission for gradlew
+              run: chmod +x gradlew
+            - name: Build with Gradle
+              run: ./gradlew assembleRelease -build-cache --parallel --daemon --warning-mode all
+
+            - name: Init APP Version Name
+              run: |
+                echo "ver_name=$(grep -m 1 'versionName' ${{ env.output }}/output-metadata.json | cut -d\" -f4)" >> $GITHUB_ENV
+
+            - name: Upload App To Artifact
+              if: success () || failure ()
+              uses: actions/upload-artifact@v3
+              with:
+                  name: "TtsDictEditor_${{env.ver_name}}"
+                  path: ${{ env.output }}/*.apk
+
+            - uses: softprops/action-gh-release@v0.1.15
+              with:
+                name: ${{ env.ver_name }}
+                tag_name: ${{ env.ver_name }}
+                body_path: ${{ github.workspace }}/CHANGELOG.md
+                draft: false
+                prerelease: false
+                files: ${{ env.output }}/*.apk
+              env:
+                GITHUB_TOKEN: ${{ secrets.TOKEN }}

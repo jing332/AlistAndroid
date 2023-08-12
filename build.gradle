@@ -6,11 +6,6 @@ buildscript {
         ksp_version = '1.9.0-1.0.13'
         about_lib_version = "10.8.3"
     }
-
-    dependencies {
-        classpath 'com.github.megatronking.stringfog:gradle-plugin:5.0.0'
-        classpath 'com.github.megatronking.stringfog:xor:5.0.0'
-    }
 }
 
 plugins {

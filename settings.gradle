@@ -13,5 +13,5 @@ dependencyResolutionManagement {
         maven { url 'https://jitpack.io' }
     }
 }
-rootProject.name = "MixTTS"
+rootProject.name = "AlistAndroid"
 include ':app'

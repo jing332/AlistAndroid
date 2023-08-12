@@ -1,0 +1,80 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - "master"
+    paths-ignore:
+      - "*.md"
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      output: "${{ github.workspace }}/app/build/outputs/apk/release"
+      mapping: "${{ github.workspace }}/app/build/outputs/mapping"
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 1.20.3
+          cache-dependency-path: ${{ github.workspace }}/alist-lib
+  
+      - name: Build Alist-lib
+        run: |
+          cd alist-lib/scripts
+          ./install_alist.sh
+          ./install_web.sh
+          ./install_gomobile.sh
+          ./install_aar.sh
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2.4.2
+
+      - name: Init Signature
+        run: |
+          touch local.properties
+          echo ALIAS_NAME='${{ secrets.ALIAS_NAME }}' >> local.properties
+          echo ALIAS_PASSWORD='${{ secrets.ALIAS_PASSWORD }}' >> local.properties
+          echo KEY_PASSWORD='${{ secrets.KEY_PASSWORD }}' >> local.properties
+          echo KEY_PATH='./key.jks' >> local.properties
+          # 从Secrets读取无换行符Base64解码, 然后保存到到app/key.jks
+          echo ${{ secrets.KEY_STORE }} | base64 --decode > $GITHUB_WORKSPACE/app/key.jks
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew assembleRelease -build-cache --parallel --daemon --warning-mode all
+
+      - name: Init APP Version Name
+        run: |
+          echo "ver_name=$(grep -m 1 'versionName' ${{ env.output }}/output-metadata.json | cut -d\" -f4)" >> $GITHUB_ENV
+
+#      - name: Upload To Lanzou
+#        continue-on-error: true
+#        run: |
+#          path="${{ env.output }}"
+#          LANZOU_FOLDER_ID="8141093"
+#          export ylogin=""
+#          export phpdisk_info=""
+#
+#          python3 $GITHUB_WORKSPACE/.github/scripts/lzy_web.py "$path" "$LANZOU_FOLDER_ID"
+#          echo "[$(date -u -d '+8 hour' '+%Y.%m.%d %H:%M:%S')] 分享链接: "
+
+      - name: Upload App To Artifact
+        if: success () || failure ()
+        uses: actions/upload-artifact@v3
+        with:
+          name: "MixTTS-v${{env.ver_name}}"
+          path: "${{ env.output }}/AlistAndroid-v${{env.ver_name}}.apk"
