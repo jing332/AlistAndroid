@@ -45,6 +45,7 @@ jobs:
       - name: Build Alist-lib
         run: |
           cd alist-lib/scripts
+          chmod +x *.sh
           sudo ./install_alist.sh
           sudo ./install_web.sh
           sudo ./install_gomobile.sh
