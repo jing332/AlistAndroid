@@ -1,0 +1,8 @@
+# Project exclude paths
+/.gradle/
+/app/build/
+/build/
+/app/release/
+
+local.properties
+

@@ -1,0 +1,212 @@
+// 导入RandomKeyGenerator类，如果不使用RandomKeyGenerator，可以删除此行
+
+import com.github.megatronking.stringfog.plugin.StringFogMode
+import com.github.megatronking.stringfog.plugin.kg.RandomKeyGenerator
+
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("kotlin-parcelize")
+    id("kotlinx-serialization")
+    id("com.google.devtools.ksp")
+    id("stringfog")
+    id("com.mikepenz.aboutlibraries.plugin")
+}
+static def releaseTime() {
+    return new Date().format("yy.MMddHH", TimeZone.getTimeZone("GMT+8"))
+}
+def version = "1." + releaseTime()
+def gitCommits = Integer.parseInt('git rev-list HEAD --count'.execute().text.trim())
+android {
+    namespace 'com.example.mixtts'
+    compileSdk 34
+    defaultConfig {
+        applicationId 'com.example.mixtts'
+        minSdkVersion 21
+        targetSdk 34
+        versionCode gitCommits
+        versionName version
+
+        ksp {
+            arg("room.schemaLocation", "$projectDir/schemas".toString())
+            arg("room.incremental", "true")
+            arg("room.expandProjection", "true")
+        }
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+
+    stringfog {
+        // 必要：加解密库的实现类路径，需和上面配置的加解密算法库一致。
+        implementation 'com.github.megatronking.stringfog.xor.StringFogImpl'
+        // 可选：加密开关，默认开启。
+        enable true
+        // 可选：指定需加密的代码包路径，可配置多个，未指定将默认全部加密。
+//    fogPackages = ['com.xxx.xxx']
+        // 可选（3.0版本新增）：指定密钥生成器，默认使用长度8的随机密钥（每个字符串均有不同随机密钥）,
+        // 也可以指定一个固定的密钥：HardCodeKeyGenerator("This is a key")
+        kg new RandomKeyGenerator()
+        // 可选（4.0版本新增）：用于控制字符串加密后在字节码中的存在形式, 默认为base64，
+        // 也可以使用text或者bytes
+        mode StringFogMode.bytes
+    }
+
+    buildFeatures {
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.1"
+    }
+    signingConfigs {
+        release {
+            //签名文件 从local.properties取值
+            Properties pro = new Properties()
+            InputStream input = project.rootProject.file("local.properties").newDataInputStream()
+            pro.load(input)
+            storeFile file(pro.getProperty("KEY_PATH"))
+            storePassword pro.getProperty("KEY_PASSWORD")
+            keyAlias pro.getProperty("ALIAS_NAME")
+            keyPassword pro.getProperty("ALIAS_PASSWORD")
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            manifestPlaceholders = [providerAuthor: "com.example.mixtts"]
+
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            signingConfig signingConfigs.release
+
+            stringfog.enable false
+            minifyEnabled false
+//            shrinkResources true
+//            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            manifestPlaceholders = [providerAuthor: "com.example.mixtts.debug"]
+            applicationIdSuffix ".debug"
+            versionNameSuffix "_debug"
+
+            ndk {
+                //noinspection ChromeOsAbiSupport
+                abiFilters "armeabi-v7a"
+            }
+        }
+    }
+
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+            java.srcDirs = ['src/main/java', 'src/main/kotlin']
+        }
+    }
+
+    splits {
+        abi {
+            enable gradle.startParameter.taskNames.any { it.contains("Release") }
+            reset()
+            //noinspection ChromeOsAbiSupport
+            include 'armeabi-v7a', 'arm64-v8a'
+            universalApk true
+        }
+    }
+
+    compileOptions {
+//        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+
+    kotlin {
+        jvmToolchain(17)
+    }
+
+    android.applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            //noinspection GrDeprecatedAPIUsage
+            def abiName = output.getFilter(com.android.build.OutputFile.ABI)
+            if (abiName == null)
+                output.outputFileName = "MixTTS-v${variant.versionName}.apk"
+            else
+                output.outputFileName = "MixTTS-v${variant.versionName}_${abiName}.apk"
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+    implementation("com.github.megatronking.stringfog:xor:5.0.0")
+
+    implementation 'androidx.appcompat:appcompat:1.6.1'
+
+    implementation("com.mikepenz:aboutlibraries-core:${about_lib_version}")
+    implementation("com.mikepenz:aboutlibraries-compose:${about_lib_version}")
+    implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
+
+
+    implementation("androidx.documentfile:documentfile:1.0.1")
+    implementation("androidx.core:core-ktx:1.10.1")
+
+    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("com.charleskorn.kaml:kaml:0.55.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+
+    // Room
+    implementation("androidx.room:room-runtime:$room_version")
+    implementation("androidx.room:room-ktx:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
+    androidTestImplementation("androidx.room:room-testing:$room_version")
+
+    // IO & NET
+    implementation 'com.squareup.okio:okio:3.3.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.11.0'
+    implementation 'com.github.liangjingkanji:Net:3.5.8'
+
+    implementation("com.google.android.exoplayer:exoplayer-core:2.19.0")
+
+    implementation("org.apache.commons:commons-lang3:3.12.0")
+    implementation("com.github.FunnySaltyFish.ComposeDataSaver:data-saver:v1.1.6")
+    implementation("com.louiscad.splitties:splitties-systemservices:3.0.0")
+    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
+
+    def accompanistVersion = "0.31.3-beta"
+    implementation("com.google.accompanist:accompanist-systemuicontroller:${accompanistVersion}")
+    implementation("com.google.accompanist:accompanist-navigation-animation:${accompanistVersion}")
+
+
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation("androidx.navigation:navigation-compose:2.6.0")
+
+    implementation 'androidx.activity:activity-compose:1.7.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1'
+//    def composeBom = platform('androidx.compose:compose-bom:2023.06.01')
+    def composeBom = platform("dev.chrisbanes.compose:compose-bom:2023.07.00-alpha02")
+    implementation composeBom
+    androidTestImplementation composeBom
+
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.ui:ui")
+
+    implementation 'androidx.compose.material:material-icons-core'
+    implementation 'androidx.compose.material:material-icons-extended'
+    implementation 'androidx.compose.material3:material3-window-size-class'
+
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+
+
+}
