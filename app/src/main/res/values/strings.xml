@@ -28,4 +28,7 @@
     <string name="alist_switch">开关</string>
     <string name="more_options">更多选项</string>
     <string name="about">关于</string>
+    <string name="listen_address">监听地址</string>
+    <string name="edit_config_json">编辑 config.json</string>
+    <string name="no_server_enable_warn_msg">请至少启用一个服务器！</string>
 </resources>

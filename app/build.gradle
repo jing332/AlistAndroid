@@ -73,9 +73,9 @@ android {
 //            shrinkResources true
 //            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
-            manifestPlaceholders = [providerAuthor: "com.github.jing332.alistandroid.debug"]
             applicationIdSuffix ".debug"
             versionNameSuffix "_debug"
+            manifestPlaceholders = [providerAuthor: "com.github.jing332.alistandroid.debug"]
 
             ndk {
                 //noinspection ChromeOsAbiSupport
