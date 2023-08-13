@@ -13,7 +13,6 @@ import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
 import androidx.core.content.ContextCompat
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.constant.AppConst
 import com.github.jing332.alistandroid.model.AList
@@ -85,12 +84,17 @@ class AlistService : Service() {
     inner class MyReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == AList.ACTION_STATUS_CHANGED) {
-                if (!AList.isRunning) {
+                if (!AList.hasRunning) {
                     stopForeground(true)
                     stopSelf()
                 }
             }
         }
+    }
+
+    fun httpAddress(): String {
+        val cfg = AList.config()
+        return "http://localhost:${cfg.scheme.httpPort}"
     }
 
     @Suppress("DEPRECATION")
@@ -151,7 +155,7 @@ class AlistService : Service() {
         val notification = builder
             .setColor(Color.BLUE)
             .setContentTitle(getString(R.string.alist_server_running))
-            .setContentText("默认地址：http://127.0.0.1:5224")
+            .setContentText(httpAddress())
             .setSmallIcon(smallIconRes)
             .setContentIntent(pendingIntent)
             .addAction(0, getString(R.string.shutdown), shutdownAction)

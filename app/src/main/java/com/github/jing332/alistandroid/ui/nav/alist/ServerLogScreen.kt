@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.constant.LogLevel
+import com.github.jing332.alistandroid.constant.LogLevel.Companion.toLevelString
 import com.github.jing332.alistandroid.data.appDb
 
 @Composable
@@ -69,7 +70,7 @@ fun ServerLogScreen(modifier: Modifier) {
                         interactionSource = remember { MutableInteractionSource() },
                         indication = rememberRipple()
                     ) {
-                        showDescDialog = it.description ?: ""
+                        showDescDialog = it.level.toLevelString()
                     }
                     ) {
                         SelectionContainer {
@@ -84,10 +85,10 @@ fun ServerLogScreen(modifier: Modifier) {
                                     )
 
                                     LogLevel.INFO -> MaterialTheme.colorScheme.onBackground.copy(
-                                        alpha = 0.9f
+                                        alpha = 0.8f
                                     )
 
-                                    LogLevel.WARN -> Color.Yellow
+                                    LogLevel.WARN -> MaterialTheme.colorScheme.onBackground
                                     LogLevel.ERROR -> MaterialTheme.colorScheme.error
                                     else -> MaterialTheme.colorScheme.primary
                                 }

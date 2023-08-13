@@ -1,7 +1,6 @@
 package com.github.jing332.alistandroid.constant
 
 import androidx.annotation.IntDef
-import com.github.jing332.alistandroid.constant.LogLevel
 
 @IntDef(
     LogLevel.PANIC,
@@ -21,5 +20,19 @@ annotation class LogLevel {
         const val INFO = 5
         const val DEBUG = 6
         const val TRACE = 7
+
+        fun Int.toLevelString(): String {
+            return when (this) {
+                PANIC -> "PANIC"
+                FATAL -> "FATAL"
+                ERROR -> "ERROR"
+                WARN -> "WARN"
+                INFO -> "INFO"
+                DEBUG -> "DEBUG"
+                TRACE -> "TRACE"
+                else -> "UNKNOWN"
+            }
+        }
     }
+
 }
