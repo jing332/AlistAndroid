@@ -5,6 +5,14 @@
 /app/release/
 
 local.properties
-alistlib.aar
-androidlib.aar
+
+/alist-lib/*
+!alist-lib/alistlib
+!alist-lib/scripts
+
+*.aar
+*.exe
+*.tgz
+*.jar
+
 

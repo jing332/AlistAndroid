@@ -10,8 +10,11 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBusiness
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Password
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -97,6 +100,14 @@ fun AListScreen() {
                 }
             })
     }
+    var showMoreOptions by remember { mutableStateOf(false) }
+
+    var showAboutDialog by remember { mutableStateOf(false) }
+    if (showAboutDialog) {
+        AboutDialog {
+            showAboutDialog = false
+        }
+    }
 
     Scaffold(modifier = Modifier.imePadding(),
         topBar = {
@@ -125,6 +136,22 @@ fun AListScreen() {
                             Icons.Default.Password,
                             stringResource(R.string.admin_password)
                         )
+                    }
+
+                    IconButton(onClick = {
+                        showMoreOptions = true
+                    }) {
+                        DropdownMenu(
+                            expanded = showMoreOptions,
+                            onDismissRequest = { showMoreOptions = false }) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.about)) },
+                                onClick = {
+                                    showMoreOptions = false
+                                    showAboutDialog = true
+                                })
+                        }
+                        Icon(Icons.Default.MoreVert, stringResource(R.string.more_options))
                     }
                 }
             )

@@ -7,6 +7,11 @@ plugins {
     id("com.mikepenz.aboutlibraries.plugin")
 }
 
+Properties pro = new Properties()
+InputStream input = rootProject.file("local.properties").newDataInputStream()
+pro.load(input)
+input.close()
+
 static def releaseTime() {
     return new Date().format("yy.MMddHH", TimeZone.getTimeZone("GMT+8"))
 }
@@ -29,11 +34,14 @@ android {
             arg("room.expandProjection", "true")
         }
 
+        buildConfigField "String", "ALIST_VERSION", "\"" + pro["ALIST_VERSION"] + "\""
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildFeatures {
         compose true
+        buildConfig true
     }
 
     composeOptions {
@@ -41,14 +49,10 @@ android {
     }
     signingConfigs {
         release {
-            //签名文件 从local.properties取值
-            Properties pro = new Properties()
-            InputStream input = project.rootProject.file("local.properties").newDataInputStream()
-            pro.load(input)
-            storeFile file(pro.getProperty("KEY_PATH"))
-            storePassword pro.getProperty("KEY_PASSWORD")
-            keyAlias pro.getProperty("ALIAS_NAME")
-            keyPassword pro.getProperty("ALIAS_PASSWORD")
+            storeFile file(pro["KEY_PATH"])
+            storePassword pro["KEY_PASSWORD"]
+            keyAlias pro["ALIAS_NAME"]
+            keyPassword pro["ALIAS_PASSWORD"]
         }
     }
 
