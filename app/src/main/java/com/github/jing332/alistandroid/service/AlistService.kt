@@ -92,7 +92,7 @@ class AlistService : Service() {
         }
     }
 
-    fun httpAddress(): String {
+    private fun httpAddress(): String {
         val cfg = AList.config()
         return "http://localhost:${cfg.scheme.httpPort}"
     }

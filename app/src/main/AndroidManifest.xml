@@ -82,6 +82,13 @@
                 android:value="" />
         </activity>
 
+        <activity
+            android:name=".ui.SwitchServerActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="alist.switch"
+            android:theme="@android:style/Theme.NoDisplay" />
+
     </application>
 
 </manifest>

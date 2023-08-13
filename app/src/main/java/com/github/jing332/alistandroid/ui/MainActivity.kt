@@ -10,12 +10,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
+import com.github.jing332.alistandroid.model.ShortCuts
 import com.github.jing332.alistandroid.ui.nav.BottomNavBar
 import com.github.jing332.alistandroid.ui.nav.NavigationGraph
+import kotlinx.coroutines.launch
 import splitties.systemservices.powerManager
 
-@Suppress("DEPRECATION")
 class MainActivity : BaseComposeActivity() {
     companion object {
         private const val TAG = "MainActivity"
@@ -24,7 +26,10 @@ class MainActivity : BaseComposeActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        killBattery()
+        lifecycleScope.launch {
+            killBattery()
+            ShortCuts.buildShortCuts(this@MainActivity)
+        }
     }
 
 

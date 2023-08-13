@@ -23,4 +23,7 @@
     <string name="alist_config">AList配置</string>
     <string name="settings">设置</string>
     <string name="password">密码</string>
+    <string name="alist_starting">启动中</string>
+    <string name="alist_shut_downing">关闭中</string>
+    <string name="alist_switch">开关</string>
 </resources>
