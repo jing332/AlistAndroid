@@ -20,4 +20,6 @@
     <string name="server_shutdown_failed">关闭失败：%1$s</string>
     <string name="address_copied">已复制地址</string>
     <string name="set_admin_pwd_for_not_running">⚠️启动服务器才可设置admin密码</string>
+    <string name="alist_config">AList配置</string>
+    <string name="settings">设置</string>
 </resources>

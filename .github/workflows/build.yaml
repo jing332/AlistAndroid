@@ -92,4 +92,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: "Alist-v${{env.ver_name}}"
-          path: "${{ env.output }}/AlistAndroid-v${{env.ver_name}}.apk"
+          path: "${{ env.output }}/AList-v${{env.ver_name}}.apk"

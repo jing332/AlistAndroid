@@ -1,6 +1,5 @@
 package com.github.jing332.alistandroid.service
 
-import alistlib.Alistlib
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -14,8 +13,9 @@ import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
 import androidx.core.content.ContextCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.github.jing332.alistandroid.R
-import com.github.jing332.alistandroid.data.appDb
+import com.github.jing332.alistandroid.constant.AppConst
 import com.github.jing332.alistandroid.model.AList
 import com.github.jing332.alistandroid.ui.MainActivity
 import com.github.jing332.alistandroid.util.ClipboardUtils
@@ -32,18 +32,23 @@ class AlistService : Service() {
         const val ACTION_COPY_ADDRESS =
             "com.github.jing332.alistandroid.service.AlistService.ACTION_COPY_ADDRESS"
 
-        const val NOTICATION_CHAN_ID = "alist_server"
+        const val NOTIFICATION_CHAN_ID = "alist_server"
         const val FOREGROUND_ID = 5224
     }
 
     private val mScope = CoroutineScope(Job())
     private val mNotificationReceiver = NotificationActionReceiver()
+    private val mReceiver = MyReceiver()
 
     override fun onBind(p0: Intent?): IBinder? = null
 
     override fun onCreate() {
         super.onCreate()
 
+        AppConst.localBroadcast.registerReceiver(
+            mReceiver,
+            IntentFilter(AList.ACTION_STATUS_CHANGED)
+        )
         ContextCompat.registerReceiver(
             this,
             mNotificationReceiver,
@@ -62,6 +67,8 @@ class AlistService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         stopForeground(true)
+
+        AppConst.localBroadcast.unregisterReceiver(mReceiver)
         unregisterReceiver(mNotificationReceiver)
 
     }
@@ -74,13 +81,13 @@ class AlistService : Service() {
         return super.onStartCommand(intent, flags, startId)
     }
 
+    @Suppress("DEPRECATION")
     inner class MyReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == ACTION_COPY_ADDRESS) {
-                val address = intent.getStringExtra("address")
-                if (address != null) {
-                    ClipboardUtils.copyText(address)
-                    toast(R.string.address_copied)
+            if (intent?.action == AList.ACTION_STATUS_CHANGED) {
+                if (!AList.isRunning) {
+                    stopForeground(true)
+                    stopSelf()
                 }
             }
         }
@@ -123,7 +130,7 @@ class AlistService : Service() {
         val builder = Notification.Builder(applicationContext)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {/*Android 8.0+ 要求必须设置通知信道*/
             val chan = NotificationChannel(
-                NOTICATION_CHAN_ID,
+                NOTIFICATION_CHAN_ID,
                 getString(R.string.alist_server),
                 NotificationManager.IMPORTANCE_NONE
             )
@@ -137,7 +144,7 @@ class AlistService : Service() {
                 else -> R.drawable.server2
             }
 
-            builder.setChannelId(NOTICATION_CHAN_ID)
+            builder.setChannelId(NOTIFICATION_CHAN_ID)
         } else {
             smallIconRes = R.mipmap.ic_launcher_round
         }

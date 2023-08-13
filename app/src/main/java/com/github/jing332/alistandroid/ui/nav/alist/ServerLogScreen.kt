@@ -1,4 +1,4 @@
-package com.github.jing332.alistandroid.ui
+package com.github.jing332.alistandroid.ui.nav.alist
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

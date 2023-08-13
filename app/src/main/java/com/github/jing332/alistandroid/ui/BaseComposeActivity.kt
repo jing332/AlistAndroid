@@ -9,23 +9,13 @@ import androidx.core.view.WindowCompat
 import com.github.jing332.alistandroid.ui.theme.AppTheme
 import com.github.jing332.alistandroid.ui.widgets.TransparentSystemBars
 
-abstract class BaseComposeActivity(
-    private val flagSecure: Boolean = true,
-    private val hasTheme: Boolean = true
-) : ComponentActivity() {
+abstract class BaseComposeActivity() : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        if (flagSecure)
-            window.addFlags(WindowManager.LayoutParams.FLAG_SECURE);
 
         setContent {
-            if (hasTheme)
-                AppTheme {
-                    TransparentSystemBars()
-                    Content()
-                }
-            else {
+            AppTheme {
                 TransparentSystemBars()
                 Content()
             }

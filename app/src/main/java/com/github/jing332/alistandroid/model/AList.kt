@@ -73,6 +73,10 @@ object AList {
     }
 
     fun startup() {
+        if (Alistlib.isRunning("")){
+            context.longToast("服务已在运行中")
+            return
+        }
         appDb.serverLogDao.deleteAll()
 
         Alistlib.setConfigData(mDataPath)
