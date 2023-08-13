@@ -17,7 +17,7 @@ class App : Application() {
 
         CrashHandler(this)
 
-        startService(Intent(this, AlistService::class.java))
+//        startService(Intent(this, AlistService::class.java))
     }
 
     companion object {

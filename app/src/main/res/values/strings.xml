@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Alist</string>
+    <string name="app_name">AList</string>
 
     <string name="open_source_license">开源许可</string>
     <string name="back">返回</string>
     <string name="no_file_selected">未选择文件</string>
-    <string name="error">错误❌</string>
+    <string name="error">❌ 错误</string>
+    <string name="ok">确定</string>
+    <string name="description">描述</string>
+    <string name="log">日志</string>
+    <string name="alist_server">AList服务器</string>
+    <string name="add_desktop_shortcut">添加桌面快捷方式</string>
+    <string name="shutdown">关闭</string>
+    <string name="copy_address">复制地址</string>
+    <string name="alist_server_running">AList运行中</string>
+    <string name="cancel">取消</string>
+    <string name="admin_password_set_to">admin 密码已设为：\n$s</string>
+    <string name="admin_password">admin 密码</string>
+    <string name="server_shutdown_failed">关闭失败：%1$s</string>
+    <string name="address_copied">已复制地址</string>
+    <string name="set_admin_pwd_for_not_running">⚠️启动服务器才可设置admin密码</string>
 </resources>

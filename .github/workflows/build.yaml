@@ -28,7 +28,7 @@ jobs:
 
       - name: Setup tmate session
         uses: mxschmitt/action-tmate@v3
-        # if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+        if: false
         with:
           detached: true    
 
@@ -91,5 +91,5 @@ jobs:
         if: success () || failure ()
         uses: actions/upload-artifact@v3
         with:
-          name: "MixTTS-v${{env.ver_name}}"
+          name: "Alist-v${{env.ver_name}}"
           path: "${{ env.output }}/AlistAndroid-v${{env.ver_name}}.apk"

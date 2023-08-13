@@ -115,9 +115,9 @@ android {
             //noinspection GrDeprecatedAPIUsage
             def abiName = output.getFilter(com.android.build.OutputFile.ABI)
             if (abiName == null)
-                output.outputFileName = "MixTTS-v${variant.versionName}.apk"
+                output.outputFileName = "AList-v${variant.versionName}.apk"
             else
-                output.outputFileName = "MixTTS-v${variant.versionName}_${abiName}.apk"
+                output.outputFileName = "AList-v${variant.versionName}_${abiName}.apk"
         }
     }
 }
