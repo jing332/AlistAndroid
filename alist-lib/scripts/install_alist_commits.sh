@@ -3,7 +3,7 @@ SHA=$(curl -s https://api.github.com/repos/alist-org/alist/commits/main | grep -
 echo "Current latest sha: https://github.com/alist-org/alist/tree/${SHA}"
 
 curl -L -o "main.zip" https://github.com/alist-org/alist/archive/refs/heads/main.zip
-unzip main.zip -o
+unzip -o main.zip
 mv -f alist-main/* ../
 
 echo "Write sha to local.properties"

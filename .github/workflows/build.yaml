@@ -52,7 +52,7 @@ jobs:
           cd alist-lib/scripts
           chmod +x *.sh
           
-          if [ product == "latestRelease" ]; then
+          if [ $product == "latestRelease" ]; then
             ./install_alist.sh
           else
             ./install_alist_commits.sh
