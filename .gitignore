@@ -7,6 +7,7 @@
 local.properties
 
 /alist-lib/*
+alist-main
 !alist-lib/alistlib
 !alist-lib/scripts
 
@@ -14,5 +15,5 @@ local.properties
 *.exe
 *.tgz
 *.jar
-
+*.zip
 

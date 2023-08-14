@@ -1,4 +1,4 @@
-package com.github.jing332.alistandroid.model
+package com.github.jing332.alistandroid.model.alist
 
 import alistlib.Alistlib
 import alistlib.Event
@@ -103,17 +103,5 @@ object AList {
         init()
         Alistlib.start()
         notifyStatusChanged()
-    }
-
-    @OptIn(ExperimentalSerializationApi::class)
-    fun config(): AListConfig {
-        try {
-            File(configPath).inputStream().use {
-                return AppConst.json.decodeFromStream<AListConfig>(it)
-            }
-        } catch (e: Exception) {
-            context.longToast("读取config.json失败：$e")
-            return AListConfig()
-        }
     }
 }

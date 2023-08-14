@@ -22,10 +22,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,8 +39,13 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.constant.AppConst
-import com.github.jing332.alistandroid.model.AList
+import com.github.jing332.alistandroid.model.alist.AList
+import com.github.jing332.alistandroid.model.alist.AListConfigManager
 import com.github.jing332.alistandroid.ui.widgets.DenseOutlinedField
+import com.github.jing332.alistandroid.util.ToastUtils.longToast
+import com.github.jing332.alistandroid.util.ToastUtils.toast
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.launch
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,19 +53,38 @@ import java.io.File
 fun AListConfigScreen() {
     val context = LocalContext.current
     fun openConfigJson() {
-        val uri =
-            FileProvider.getUriForFile(
-                /* context = */ context,
-                /* authority = */ AppConst.fileProviderAuthor,
-                /* file = */ File(AList.configPath)
-            )
-        val intent = Intent(Intent.ACTION_VIEW, uri).apply {
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            setDataAndType(uri, "text/*")
-        }
+        runCatching {
+            val uri =
+                FileProvider.getUriForFile(
+                    /* context = */ context,
+                    /* authority = */ AppConst.fileProviderAuthor,
+                    /* file = */ File(AList.configPath)
+                )
+            val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                setDataAndType(uri, "text/*")
+            }
 
-        context.startActivity(intent)
+            context.startActivity(
+                Intent.createChooser(
+                    intent,
+                    context.getString(R.string.edit_config_json)
+                )
+            )
+        }.onFailure {
+            context.longToast(it.toString())
+        }
+    }
+
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        /*scope.launch {
+            AListConfigManager.flowConfig().conflate().collect {
+                context.toast(it.scheme.httpPort.toString())
+            }
+            println("collect end")
+        }*/
     }
 
     var address by remember { mutableStateOf("0.0.0.0") }

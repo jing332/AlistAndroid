@@ -1,6 +1,7 @@
 package com.github.jing332.alistandroid.ui.nav.alist
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,6 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -21,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.constant.LogLevel
@@ -57,36 +60,37 @@ fun ServerLogScreen(modifier: Modifier) {
             )
 
             LazyColumn(
-                Modifier.padding(8.dp),
+                Modifier
+                    .padding(8.dp)
+                    .fillMaxSize(),
             ) {
-                val lastItemId = list.lastOrNull()?.id
                 items(list, { it.id }) {
                     SelectionContainer {
-                        Column {
-                            Text(
-                                "[${it.level.toLevelString()}] " + it.message,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 2.dp),
-                                color = when (it.level) {
-                                    LogLevel.DEBUG -> MaterialTheme.colorScheme.onBackground.copy(
-                                        alpha = 0.5f
-                                    )
+                        Text(
+                            "[${it.level.toLevelString()}] " + it.message,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 2.dp),
+                            color = when (it.level) {
+                                LogLevel.DEBUG -> MaterialTheme.colorScheme.onBackground.copy(
+                                    alpha = 0.5f
+                                )
 
-                                    LogLevel.INFO -> MaterialTheme.colorScheme.onBackground.copy(
-                                        alpha = 0.8f
-                                    )
+                                LogLevel.INFO -> MaterialTheme.colorScheme.onBackground.copy(
+                                    alpha = 0.8f
+                                )
 
-                                    LogLevel.WARN -> MaterialTheme.colorScheme.errorContainer
-                                    LogLevel.ERROR -> MaterialTheme.colorScheme.error
-                                    else -> MaterialTheme.colorScheme.primary
-                                }
-                            )
-                        }
+                                LogLevel.WARN -> MaterialTheme.colorScheme.tertiary
+                                LogLevel.ERROR -> MaterialTheme.colorScheme.error
+                                else -> MaterialTheme.colorScheme.primary
+                            },
+                            overflow = TextOverflow.Visible,
+                            lineHeight = LocalTextStyle.current.lineHeight * 0.8
+                        )
                     }
                 }
+
             }
         }
     }
-
 }

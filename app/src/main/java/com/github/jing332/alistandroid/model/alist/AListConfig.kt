@@ -1,4 +1,4 @@
-package com.github.jing332.alistandroid.model
+package com.github.jing332.alistandroid.model.alist
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

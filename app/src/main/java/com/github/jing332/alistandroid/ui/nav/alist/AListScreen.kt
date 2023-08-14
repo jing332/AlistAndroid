@@ -37,7 +37,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.github.jing332.alistandroid.R
-import com.github.jing332.alistandroid.model.AList
+import com.github.jing332.alistandroid.model.alist.AList
 import com.github.jing332.alistandroid.service.AlistService
 import com.github.jing332.alistandroid.ui.MyTools
 import com.github.jing332.alistandroid.ui.SwitchServerActivity
@@ -89,7 +89,10 @@ fun AListScreen() {
                     onClick = {
                         showPwdDialog = false
                         AList.setAdminPassword(pwd)
-                        context.longToast(R.string.admin_password_set_to, pwd)
+                        context.longToast(
+                            R.string.admin_password_set_to,
+                            pwd
+                        )
                     }) {
                     Text(stringResource(id = R.string.ok))
                 }

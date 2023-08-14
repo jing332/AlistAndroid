@@ -14,7 +14,8 @@ import android.os.IBinder
 import androidx.core.content.ContextCompat
 import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.constant.AppConst
-import com.github.jing332.alistandroid.model.AList
+import com.github.jing332.alistandroid.model.alist.AList
+import com.github.jing332.alistandroid.model.alist.AListConfigManager
 import com.github.jing332.alistandroid.ui.MainActivity
 import com.github.jing332.alistandroid.ui.theme.androidColor
 import com.github.jing332.alistandroid.util.ClipboardUtils
@@ -93,7 +94,7 @@ class AlistService : Service() {
     }
 
     private fun httpAddress(): String {
-        val cfg = AList.config()
+        val cfg = AListConfigManager.config()
         return "http://localhost:${cfg.scheme.httpPort}"
     }
 

@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.github.jing332.alistandroid.R
-import com.github.jing332.alistandroid.model.AList
+import com.github.jing332.alistandroid.model.alist.AList
 import com.github.jing332.alistandroid.service.AlistService
 import com.github.jing332.alistandroid.util.ToastUtils.toast
 
