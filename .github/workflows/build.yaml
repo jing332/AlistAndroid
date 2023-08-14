@@ -55,7 +55,7 @@ jobs:
           if [ product == "latestRelease" ]; then
             ./install_alist.sh
           else
-            ./install_alist_commit.sh
+            ./install_alist_commits.sh
           fi
           
           ./install_web.sh
