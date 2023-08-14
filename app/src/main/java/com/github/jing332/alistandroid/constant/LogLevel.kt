@@ -13,13 +13,13 @@ import androidx.annotation.IntDef
 )
 annotation class LogLevel {
     companion object {
-        const val PANIC = 1
-        const val FATAL = 2
-        const val ERROR = 3
-        const val WARN = 4
-        const val INFO = 5
-        const val DEBUG = 6
-        const val TRACE = 7
+        const val PANIC = 0
+        const val FATAL = 1
+        const val ERROR = 2
+        const val WARN = 3
+        const val INFO = 4
+        const val DEBUG = 5
+        const val TRACE = 6
 
         fun Int.toLevelString(): String {
             return when (this) {

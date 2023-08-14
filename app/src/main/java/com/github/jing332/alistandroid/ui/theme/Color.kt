@@ -1,6 +1,18 @@
 package com.github.jing332.alistandroid.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
+
+val Color.colorCode: String
+    get() {
+        val colorCode = this.toArgb()
+        return String.format("#%06X", 0xFFFFFF and colorCode)
+    }
+
+val Color.androidColor: Int
+    get() {
+        return android.graphics.Color.parseColor(this.colorCode)
+    }
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)

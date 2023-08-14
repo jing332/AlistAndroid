@@ -9,7 +9,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Color
 import android.os.Build
 import android.os.IBinder
 import androidx.core.content.ContextCompat
@@ -17,6 +16,7 @@ import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.constant.AppConst
 import com.github.jing332.alistandroid.model.AList
 import com.github.jing332.alistandroid.ui.MainActivity
+import com.github.jing332.alistandroid.ui.theme.androidColor
 import com.github.jing332.alistandroid.util.ClipboardUtils
 import com.github.jing332.alistandroid.util.ToastUtils.toast
 import kotlinx.coroutines.CoroutineScope
@@ -130,6 +130,7 @@ class AlistService : Service() {
                 pendingIntentFlags
             )
 
+        val color = com.github.jing332.alistandroid.ui.theme.seed.androidColor
         val smallIconRes: Int
         val builder = Notification.Builder(applicationContext)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {/*Android 8.0+ 要求必须设置通知信道*/
@@ -138,7 +139,7 @@ class AlistService : Service() {
                 getString(R.string.alist_server),
                 NotificationManager.IMPORTANCE_NONE
             )
-            chan.lightColor = android.graphics.Color.GREEN
+            chan.lightColor = color
             chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
             val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             service.createNotificationChannel(chan)
@@ -153,7 +154,7 @@ class AlistService : Service() {
             smallIconRes = R.mipmap.ic_launcher_round
         }
         val notification = builder
-            .setColor(Color.BLUE)
+            .setColor(color)
             .setContentTitle(getString(R.string.alist_server_running))
             .setContentText(httpAddress())
             .setSmallIcon(smallIconRes)
@@ -172,7 +173,7 @@ class AlistService : Service() {
                 ACTION_SHUTDOWN -> AList.shutdown()
 
                 ACTION_COPY_ADDRESS -> {
-                    ClipboardUtils.copyText("AList", "http://127.0.0.1:5224")
+                    ClipboardUtils.copyText("AList", httpAddress())
                     toast(R.string.address_copied)
                 }
             }
