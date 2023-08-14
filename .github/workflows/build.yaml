@@ -18,8 +18,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        product: [ { name: "AListLatestRelease-最新Release版", value: latestRelease }, { name: "AListLatestCommit-最新提交版", value: latestCommit } ]
 
+      fail-fast: false
     env:
+      product: ${{ matrix.product.value }}
       output: "${{ github.workspace }}/app/build/outputs/apk/release"
     steps:
       - uses: actions/checkout@v3
@@ -30,7 +35,7 @@ jobs:
         uses: mxschmitt/action-tmate@v3
         if: false
         with:
-          detached: true    
+          detached: true
 
       - uses: actions/setup-java@v3
         with:
@@ -41,12 +46,18 @@ jobs:
         with:
           go-version: 1.20.3
           cache-dependency-path: ${{ github.workspace }}/alist-lib
-  
+
       - name: Build Alist-lib
         run: |
           cd alist-lib/scripts
           chmod +x *.sh
-          ./install_alist.sh
+          
+          if [ product == "latestRelease" ]; then
+            ./install_alist.sh
+          else
+            ./install_alist_commit.sh
+          fi
+          
           ./install_web.sh
 
           go install golang.org/x/mobile/cmd/gomobile@latest
@@ -76,20 +87,20 @@ jobs:
         run: |
           echo "ver_name=$(grep -m 1 'versionName' ${{ env.output }}/output-metadata.json | cut -d\" -f4)" >> $GITHUB_ENV
 
-#      - name: Upload To Lanzou
-#        continue-on-error: true
-#        run: |
-#          path="${{ env.output }}"
-#          LANZOU_FOLDER_ID="8141093"
-#          export ylogin=""
-#          export phpdisk_info=""
-#
-#          python3 $GITHUB_WORKSPACE/.github/scripts/lzy_web.py "$path" "$LANZOU_FOLDER_ID"
-#          echo "[$(date -u -d '+8 hour' '+%Y.%m.%d %H:%M:%S')] 分享链接: "
+      #      - name: Upload To Lanzou
+      #        continue-on-error: true
+      #        run: |
+      #          path="${{ env.output }}"
+      #          LANZOU_FOLDER_ID="8141093"
+      #          export ylogin=""
+      #          export phpdisk_info=""
+      #
+      #          python3 $GITHUB_WORKSPACE/.github/scripts/lzy_web.py "$path" "$LANZOU_FOLDER_ID"
+      #          echo "[$(date -u -d '+8 hour' '+%Y.%m.%d %H:%M:%S')] 分享链接: "
 
       - name: Upload App To Artifact
         if: success () || failure ()
         uses: actions/upload-artifact@v3
         with:
-          name: "Alist-v${{env.ver_name}}"
+          name: "Alist-${{ env.product }}-v${{ env.ver_name }}"
           path: "${{ env.output }}/AList-v${{env.ver_name}}.apk"

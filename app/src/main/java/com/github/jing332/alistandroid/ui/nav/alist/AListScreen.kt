@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -36,6 +37,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.github.jing332.alistandroid.BuildConfig
 import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.model.alist.AList
 import com.github.jing332.alistandroid.service.AlistService
@@ -115,7 +117,21 @@ fun AListScreen() {
     Scaffold(modifier = Modifier.imePadding(),
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.app_name)) },
+                title = {
+                    val miniSha = remember {
+                        try {
+                            BuildConfig.ALIST_COMMIT_SHA.slice(0..6)
+                        } catch (_: Exception) {
+                            ""
+                        }
+                    }
+                    Row {
+                        Text(stringResource(R.string.app_name))
+                        Text(
+                            " - " + miniSha.ifEmpty { BuildConfig.ALIST_VERSION }
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = {
                         MyTools.addShortcut(

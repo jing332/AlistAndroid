@@ -15,8 +15,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -58,10 +58,17 @@ fun AboutDialog(onDismissRequest: () -> Unit) {
             }
 
             Column {
+                val miniSha = remember {
+                    try {
+                        BuildConfig.ALIST_COMMIT_SHA.slice(0..6)
+                    } catch (_: Exception) {
+                        ""
+                    }
+                }
                 SelectionContainer {
                     Column {
-                        Text("APP版本：${BuildConfig.VERSION_NAME}(${BuildConfig.VERSION_CODE})")
-                        Text("AList版本：${BuildConfig.ALIST_VERSION}")
+                        Text("APP - ${BuildConfig.VERSION_NAME}(${BuildConfig.VERSION_CODE})")
+                        Text("AList - ${miniSha.ifBlank { BuildConfig.ALIST_VERSION }}")
                     }
                 }
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
@@ -78,12 +85,16 @@ fun AboutDialog(onDismissRequest: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    "Github - AList",
+                    "Github - AList (${miniSha.ifBlank { "Release" }})",
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .clickable {
-                            openUrl("https://github.com/alist-org/alist/releases/tag/${BuildConfig.ALIST_VERSION}")
+                            openUrl(
+                                if (BuildConfig.ALIST_COMMIT_SHA.isEmpty())
+                                    "https://github.com/alist-org/alist/releases/tag/${BuildConfig.ALIST_VERSION}"
+                                else "https://github.com/alist-org/alist/tree/${BuildConfig.ALIST_COMMIT_SHA}"
+                            )
                         }
                         .padding(vertical = 8.dp)
                         .fillMaxWidth()

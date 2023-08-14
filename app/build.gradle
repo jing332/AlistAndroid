@@ -35,6 +35,7 @@ android {
         }
 
         buildConfigField "String", "ALIST_VERSION", "\"" + pro["ALIST_VERSION"] + "\""
+        buildConfigField "String", "ALIST_COMMIT_SHA", "\"" + pro["ALIST_COMMIT_SHA"] + "\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
