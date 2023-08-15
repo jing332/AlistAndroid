@@ -40,12 +40,8 @@ import androidx.core.content.FileProvider
 import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.constant.AppConst
 import com.github.jing332.alistandroid.model.alist.AList
-import com.github.jing332.alistandroid.model.alist.AListConfigManager
 import com.github.jing332.alistandroid.ui.widgets.DenseOutlinedField
 import com.github.jing332.alistandroid.util.ToastUtils.longToast
-import com.github.jing332.alistandroid.util.ToastUtils.toast
-import kotlinx.coroutines.flow.conflate
-import kotlinx.coroutines.launch
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -109,6 +105,11 @@ fun AListConfigScreen() {
                 .fillMaxSize()
         ) {
             Column(Modifier.align(Alignment.CenterHorizontally)) {
+                Text(
+                    "TODO 本界面的功能暂未实现",
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.titleLarge
+                )
                 ElevatedCard(Modifier.padding(8.dp)) {
                     Column(Modifier.padding(8.dp)) {
                         Text(

@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.github.jing332.alistandroid.ui.nav.alist.AListScreen
 import com.github.jing332.alistandroid.ui.nav.config.AListConfigScreen
+import com.github.jing332.alistandroid.ui.nav.provider.AListProviderScreen
 import com.github.jing332.alistandroid.ui.nav.settings.SettingsScreen
 
 @Composable
@@ -22,6 +23,10 @@ fun NavigationGraph(navController: NavHostController, modifier: Modifier) {
 
         composable(BottomNavRoute.Settings.id) {
             SettingsScreen()
+        }
+
+        composable(BottomNavRoute.AListProvider.id) {
+            AListProviderScreen()
         }
 
     }

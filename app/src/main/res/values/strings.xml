@@ -31,4 +31,6 @@
     <string name="listen_address">监听地址</string>
     <string name="edit_config_json">编辑 config.json</string>
     <string name="no_server_enable_warn_msg">请至少启用一个服务器！</string>
+    <string name="alist_provider">AList提供者</string>
+    <string name="provider_root_summary">account</string>
 </resources>

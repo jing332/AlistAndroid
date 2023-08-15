@@ -12,7 +12,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 fun BottomNavBar(navController: NavHostController) {
     val backStackEntry = navController.currentBackStackEntryAsState()
     NavigationBar {
-//            val isSelected =
         for (route in BottomNavRoute.routes) {
             val isSelected = backStackEntry.value?.destination?.route == route.id
             NavigationBarItem(

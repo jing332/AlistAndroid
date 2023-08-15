@@ -3,6 +3,7 @@ package com.github.jing332.alistandroid.ui.nav
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.PhoneAndroid
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -18,6 +19,7 @@ sealed class BottomNavRoute(
         val routes = listOf(
             AListConfig,
             AList,
+//            AListProvider,
             Settings,
         )
     }
@@ -28,6 +30,10 @@ sealed class BottomNavRoute(
 
     data object AList : BottomNavRoute(R.string.app_name, "alist", {
         Icon(painterResource(id = R.drawable.alist_logo), null)
+    })
+
+    data object AListProvider : BottomNavRoute(R.string.alist_provider, "alist_provider", {
+        Icon(Icons.Default.PhoneAndroid, null)
     })
 
     data object Settings : BottomNavRoute(R.string.settings, "settings", {

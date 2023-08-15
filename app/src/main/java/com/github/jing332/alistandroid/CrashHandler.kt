@@ -43,12 +43,11 @@ class CrashHandler(val context: Context) : Thread.UncaughtExceptionHandler {
             Thread.sleep(2000)
         val packageName = this.context.packageName
         try {
-            val appConfig = AppConfig.getInstance()
             val packageInfo = this.context.packageManager.getPackageInfo(packageName, 1)
             val str = """
                 ${DateFormat.getInstance().format(Date())}
                 Version：${packageInfo.versionCode} (${packageInfo.versionName})
-                Brand：${Build.BRAND}，手机型号：${Build.MODEL}，Android：${Build.VERSION.RELEASE}
+                Brand：${Build.BRAND}，Model：${Build.MODEL}，Android：${Build.VERSION.RELEASE}
                 StackTrace：
                 ${Log.getStackTraceString(e)}
                 """.trimIndent()
