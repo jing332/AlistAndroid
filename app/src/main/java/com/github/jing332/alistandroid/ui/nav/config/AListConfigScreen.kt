@@ -78,9 +78,10 @@ fun AListConfigScreen(vm: AListConfigViewModel = viewModel()) {
     }
 
     val scope = rememberCoroutineScope()
-    LaunchedEffect(Unit) {
-
+    LaunchedEffect(vm.hashCode()) {
+        vm.init()
     }
+    val cfg = vm.config
 
     var address by remember { mutableStateOf("0.0.0.0") }
     Scaffold(
@@ -165,7 +166,10 @@ fun AListConfigScreen(vm: AListConfigViewModel = viewModel()) {
                                     .padding(end = 8.dp),
                                 "HTTP",
                                 value = httpPort,
-                                onValueChange = { httpPort = it })
+                                onValueChange = {
+                                    httpPort = it
+
+                                })
 
                             PortEdit(
                                 Modifier
