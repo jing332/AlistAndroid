@@ -23,11 +23,11 @@ jobs:
           touch $VERSION_FILE
           ./check_alist.sh
 
-          if [ "$?" = "false" ]; then # 无更新
-
-          else # 有更新
-            echo -e "[自动同步AList版本]" > $GITHUB_WORKSPACE/CHANGELOG.md
-            echo -e 
+          if [ "$?" = "false" ]; then
+            # 无更新
+          else
+            echo -e "[自动同步AList] $alist_version" > $GITHUB_WORKSPACE/CHANGELOG.md
+            echo -e "$alist_version" > $VERSION_FILE 
 
             git config user.name "github-actions"
             git config user.email "42014615+jing332@users.noreply.github.com"
