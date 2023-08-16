@@ -23,7 +23,7 @@ jobs:
           touch $VERSION_FILE
           ./check_alist.sh
 
-          if [[ "$alist_update" = "false" ]]
+          if [[ $alist_update = false ]]
           then
             echo "无更新"
           else
