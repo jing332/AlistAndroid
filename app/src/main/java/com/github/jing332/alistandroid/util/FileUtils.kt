@@ -2,8 +2,15 @@ package com.github.jing332.alistandroid.util
 
 import java.io.File
 import java.io.InputStream
+import java.net.URLConnection
 
 object FileUtils {
+    val File.mimeType: String?
+        get() {
+            val fileNameMap = URLConnection.getFileNameMap()
+            return fileNameMap.getContentTypeFor(name)
+        }
+
     /**
      * 按行读取txt
      */

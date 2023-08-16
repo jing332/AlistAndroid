@@ -10,15 +10,15 @@ import android.provider.DocumentsContract.Root
 import android.provider.DocumentsProvider
 import android.util.Log
 import com.github.jing332.alistandroid.R
-import com.github.jing332.alistandroid.model.alistclient.FileType
+import com.github.jing332.alistandroid.model.alist.AList
+import com.github.jing332.alistandroid.util.FileUtils.mimeType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
-import java.net.URLDecoder
-import java.net.URLEncoder
+import java.io.File
 
-class AListProvider : DocumentsProvider() {
+class AListDataProvider : DocumentsProvider() {
     companion object {
         const val TAG = "AListProvider"
 
@@ -44,14 +44,9 @@ class AListProvider : DocumentsProvider() {
         const val DEFAULT_ROOT_ID = "0"
     }
 
-    //    private val mClient = AListClient()
     private val mScope = CoroutineScope(Dispatchers.IO + Job())
-    private val mManager by lazy { ProviderManager(ctx) }
 
     override fun onCreate(): Boolean {
-//        mClient.username = "admin"
-//        mClient.password = "admin"
-        mManager.setUserInfo("admin", "admin")
 
         return true
     }
@@ -61,16 +56,38 @@ class AListProvider : DocumentsProvider() {
         mScope.cancel()
     }
 
+    private val basePath
+        get() = AList.dataPath
+
     private val ctx: Context
         get() = context!!
 
-    override fun isChildDocument(parentDocumentId: String?, documentId: String?): Boolean {
-        Log.i(TAG, "isChildDocument: $parentDocumentId, $documentId")
-        return  mManager.isChildDocument(parentDocumentId ?: "", documentId ?: "")
+    private fun getFile(documentId: String?): File {
+        if (documentId == "/") return File(basePath)
 
-//        return documentId?.run { URLDecoder.decode(this, "UTF-8") }
-//            ?.startsWith(parentDocumentId ?: "") == true;
-//        return true
+        val docId = documentId.docToPath()
+        return File(basePath + File.separator + docId)
+    }
+
+    private fun getDocumentId(fileAbsPath: String): String {
+        return "/" + File.separator + fileAbsPath.removePrefix(AList.dataPath).removePrefix("/")
+    }
+
+    private fun String?.docToPath(): String {
+        var docId = this ?: ""
+        if (!docId.startsWith("/"))
+            docId = "/$docId"
+        return docId
+    }
+
+    override fun isChildDocument(parentDocumentId: String?, documentId: String?): Boolean {
+//        Log.i(TAG, "isChildDocument: $parentDocumentId, $documentId")
+//        val dir = getFile(parentDocumentId)
+//        val filepath = getFile(documentId).absolutePath
+//
+//        return dir.listFiles()?.find { it.absolutePath == filepath } != null
+
+        return documentId.docToPath().startsWith(parentDocumentId ?: "")
     }
 
     override fun getDocumentType(documentId: String?): String {
@@ -87,7 +104,7 @@ class AListProvider : DocumentsProvider() {
         result.newRow().apply {
             add(Root.COLUMN_ROOT_ID, DEFAULT_ROOT_ID)
             add(Root.COLUMN_TITLE, ctx.getString(R.string.app_name))
-            add(Root.COLUMN_SUMMARY, ctx.getString(R.string.provider_root_summary))
+            add(Root.COLUMN_SUMMARY, "data")
             add(Root.COLUMN_DOCUMENT_ID, "/")
             add(Root.COLUMN_MIME_TYPES, Document.MIME_TYPE_DIR)
             add(Root.COLUMN_ICON, R.drawable.alist_logo)
@@ -102,8 +119,8 @@ class AListProvider : DocumentsProvider() {
 
     override fun queryDocument(documentId: String?, projection: Array<out String>?): Cursor {
         Log.i(TAG, "queryDocument: " + documentId + " " + projection?.joinToString(","))
-        val isRoot = documentId == null
-        val docId = documentId ?: "/"
+        val isRoot = documentId == null || documentId == "/"
+        val docId = documentId.docToPath()
 
         val cursor = MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION)
         var flags = 0
@@ -115,13 +132,15 @@ class AListProvider : DocumentsProvider() {
                 Document.FLAG_SUPPORTS_RENAME or
                 Document.FLAG_SUPPORTS_WRITE
 
+        val file = getFile(documentId)
+
         cursor.newRow().apply {
             add(Document.COLUMN_FLAGS, flags)
             add(Document.COLUMN_DOCUMENT_ID, docId)
-            add(Document.COLUMN_MIME_TYPE, Document.MIME_TYPE_DIR)
-            add(Document.COLUMN_DISPLAY_NAME, "0")
-//            add(Document.COLUMN_LAST_MODIFIED, "未知")
-//            add(Document.COLUMN_SIZE, 0)
+            add(Document.COLUMN_MIME_TYPE, if (isRoot) Document.MIME_TYPE_DIR else file.mimeType)
+            add(Document.COLUMN_DISPLAY_NAME, file.name)
+            add(Document.COLUMN_LAST_MODIFIED, file.lastModified())
+            add(Document.COLUMN_SIZE, file.length())
         }
 
         return cursor
@@ -141,24 +160,22 @@ class AListProvider : DocumentsProvider() {
                 )
             }, sortOrder=${sortOrder}"
         )
-        var docId = if (parentDocumentId == "null") "/" else parentDocumentId ?: "/"
-        docId = URLDecoder.decode(docId, "UTF-8")
+        val docId = parentDocumentId.docToPath()
 
         return MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION).apply {
-            mManager.list(docId).forEach { content ->
+            File(AList.dataPath + File.separator + docId).listFiles()?.forEach {
                 newRow().apply {
                     add(
-                        Document.COLUMN_DOCUMENT_ID,
-                        docId + URLEncoder.encode("/${content.name}", "UTF-8")
+                        Document.COLUMN_DOCUMENT_ID, it.name
                     )
                     add(
                         Document.COLUMN_MIME_TYPE,
-                        if (content.isDir) Document.MIME_TYPE_DIR
-                        else FileType.values().find { it.v == content.type }?.mime ?: "*/*"
+                        if (it.isDirectory) Document.MIME_TYPE_DIR
+                        else it.mimeType
                     )
-                    add(Document.COLUMN_DISPLAY_NAME, content.name)
-                    add(Document.COLUMN_LAST_MODIFIED, content.modified)
-                    add(Document.COLUMN_SIZE, content.size)
+                    add(Document.COLUMN_DISPLAY_NAME, it.name)
+                    add(Document.COLUMN_LAST_MODIFIED, it.lastModified())
+                    add(Document.COLUMN_SIZE, it.length())
                 }
             }
         }
@@ -169,32 +186,19 @@ class AListProvider : DocumentsProvider() {
         mode: String?,
         signal: CancellationSignal?
     ): ParcelFileDescriptor {
-        return ParcelFileDescriptor.createPipe()[0].apply { close() }
+        val file = getFile(documentId)
+        Log.i(TAG, "openDocument: $documentId, $mode, ${file.absolutePath}")
+
+        val m = ParcelFileDescriptor.parseMode(mode ?: "rw")
+        return ParcelFileDescriptor.open(file, m)
     }
 
-    /* override fun openDocument(
-         documentId: String?,
-         mode: String?,
-         signal: CancellationSignal?
-     ): ParcelFileDescriptor {
-         Log.i(TAG, "openDocument: $documentId, $mode, $signal")
-         val m = ParcelFileDescriptor.parseMode(mode)
-         var path = documentId?.replace("//", "/") ?: throw Exception("documentId is null")
-         path = URLDecoder.decode(path, "UTF-8")
-
-         val file = runBlocking(Dispatchers.IO) {
-             mManager.getFile(path)
-         }
-
-         return ParcelFileDescriptor.open(
- //            File(ctx.getExternalFilesDir("data")!!.absolutePath + "/config.json"),
-             file,
-             m
-         )
-     }*/
-
     override fun copyDocument(sourceDocumentId: String?, targetParentDocumentId: String?): String {
-        return super.copyDocument(sourceDocumentId, targetParentDocumentId)
+        val sourceFile = getFile(sourceDocumentId)
+        val targetFile = getFile(targetParentDocumentId)
+        sourceFile.copyTo(targetFile)
+
+        return "/" + File.separator + targetFile.absolutePath.removePrefix(AList.dataPath)
     }
 
     override fun moveDocument(
@@ -206,11 +210,10 @@ class AListProvider : DocumentsProvider() {
             TAG, "moveDocument: $sourceDocumentId, $sourceParentDocumentId, $targetParentDocumentId"
         )
 
-        return super.moveDocument(
-            sourceDocumentId,
-            sourceParentDocumentId,
-            targetParentDocumentId
-        )
+        val target = getFile(targetParentDocumentId)
+        getFile(sourceDocumentId).renameTo(target)
+
+        return getDocumentId(target.absolutePath)
     }
 
     override fun deleteDocument(documentId: String?) {
@@ -222,14 +225,26 @@ class AListProvider : DocumentsProvider() {
     }
 
     override fun renameDocument(documentId: String?, displayName: String?): String {
-        val path = documentId.docToPath()
+        if (displayName == null) return ""
+        val file = getFile(documentId)
+        val target = File(file.parentFile, displayName)
+        file.renameTo(target)
 
-        mManager.rename(path, displayName ?: "null")
-        return super.renameDocument(documentId, displayName)
+        return getDocumentId(target.absolutePath)
     }
 
-    private fun String?.docToPath(): String {
-        return URLDecoder.decode(this, "UTF-8") ?: ""
+    override fun createDocument(
+        parentDocumentId: String?,
+        mimeType: String?,
+        displayName: String?
+    ): String {
+        Log.i(TAG, "createDocument: $parentDocumentId, $mimeType, $displayName")
+
+        val parent = getFile(parentDocumentId)
+        val target = File(parent, displayName ?: "new_file")
+        target.createNewFile()
+
+        return getDocumentId(target.absolutePath)
     }
 
 }

@@ -62,18 +62,17 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-       <!-- <provider
-            android:name=".provider.AListProvider"
-            android:authorities="${applicationId}.alistprovider"
+        <provider
+            android:name=".provider.AListDataProvider"
+            android:authorities="${applicationId}.alistdataprovider"
             android:exported="true"
             android:grantUriPermissions="true"
-            android:permission="android.permission.MANAGE_DOCUMENTS"
-            android:process=":background">
+            android:permission="android.permission.MANAGE_DOCUMENTS">
             <intent-filter>
                 <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
             </intent-filter>
 
-        </provider>-->
+        </provider>
 
         <activity
             android:name=".ui.MainActivity"
