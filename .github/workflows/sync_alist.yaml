@@ -23,8 +23,8 @@ jobs:
           touch $VERSION_FILE
           ./check_alist.sh
 
-          if [ "$alist_update" = "false" ]; then # 无更新
-            exit 0
+          if [ "$?" = "false" ]; then # 无更新
+
           else # 有更新
             echo -e "[自动同步AList版本]" > $GITHUB_WORKSPACE/CHANGELOG.md
             echo -e 
