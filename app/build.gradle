@@ -135,6 +135,7 @@ dependencies {
     implementation("com.mikepenz:aboutlibraries-compose:${about_lib_version}")
     implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")
 
+    implementation("com.github.jeziellago:compose-markdown:0.3.4")
 
     implementation("androidx.documentfile:documentfile:1.0.1")
     implementation("androidx.core:core-ktx:1.10.1")

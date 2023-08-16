@@ -17,4 +17,8 @@ object StringUtils {
     }
 
     fun String.paramsParse() = paramsParseInternal(this)
+
+    fun String.toNumberInt(): Int {
+        return this.replace(Regex("[^0-9]"), "").toIntOrNull() ?: 0
+    }
 }

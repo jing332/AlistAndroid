@@ -23,7 +23,7 @@ jobs:
           touch $VERSION_FILE
           ./check_alist.sh
 
-          if [[ "$?" = "false" ]]
+          if [[ "$alist_update" = "false" ]]
           then
             echo "无更新"
           else
@@ -33,6 +33,6 @@ jobs:
             git config user.name "github-actions"
             git config user.email "42014615+jing332@users.noreply.github.com"
             git add .
-            git commit -m "[bot] Update alist version"
+            git commit -m "[bot] Update alist to $alist_version"
             git push
           fi

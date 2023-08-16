@@ -41,6 +41,7 @@ import com.github.jing332.alistandroid.BuildConfig
 import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.model.alist.AList
 import com.github.jing332.alistandroid.service.AlistService
+import com.github.jing332.alistandroid.ui.LocalMainViewModel
 import com.github.jing332.alistandroid.ui.MyTools
 import com.github.jing332.alistandroid.ui.SwitchServerActivity
 import com.github.jing332.alistandroid.ui.widgets.LocalBroadcastReceiver
@@ -50,9 +51,9 @@ import com.github.jing332.alistandroid.util.ToastUtils.longToast
 @Composable
 fun AListScreen() {
     val context = LocalContext.current
+    val mainVM = LocalMainViewModel.current
     val view = LocalView.current
     var alistRunning by remember { mutableStateOf(AList.hasRunning) }
-    println(alistRunning)
 
     LocalBroadcastReceiver(intentFilter = IntentFilter(AList.ACTION_STATUS_CHANGED)) {
         println(it?.action)
@@ -164,11 +165,20 @@ fun AListScreen() {
                             expanded = showMoreOptions,
                             onDismissRequest = { showMoreOptions = false }) {
                             DropdownMenuItem(
+                                text = { Text(stringResource(R.string.check_update)) },
+                                onClick = {
+                                    showMoreOptions = false
+                                    mainVM.checkAppUpdate()
+                                }
+                            )
+
+                            DropdownMenuItem(
                                 text = { Text(stringResource(R.string.about)) },
                                 onClick = {
                                     showMoreOptions = false
                                     showAboutDialog = true
-                                })
+                                }
+                            )
                         }
                         Icon(Icons.Default.MoreVert, stringResource(R.string.more_options))
                     }
