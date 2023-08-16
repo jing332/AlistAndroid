@@ -23,10 +23,11 @@ jobs:
           touch $VERSION_FILE
           ./check_alist.sh
 
-          if [$? -eq 0]; then # 无更新
-
+          if [ "$alist_update" -eq "false" ]; then # 无更新
+            exit 0
           else # 有更新
             echo -e "[自动同步AList版本]" > $GITHUB_WORKSPACE/CHANGELOG.md
+            echo -e 
 
             git config user.name github-actions
             git config user.email github-actions@github.com
