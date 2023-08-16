@@ -29,7 +29,9 @@ jobs:
           echo "alist_version=${{ env.alist_version }}"
           echo "alist_update=${{ env.alist_update }}" 
 
-          if [ ${{ env.alist_update }} -eq 1 ]
+          echo "alist_update=1" >> $GITHUB_ENV
+
+          if [ ${{ env.alist_update }} -eq 0 ]
           then
             echo "无更新"
           else
