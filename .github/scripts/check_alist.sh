@@ -23,8 +23,8 @@ echo "Current AList version: $VER ${VER_INT}"
 
 if [ $VER_INT -ge $LATEST_VER_INT ]; then
     echo "Current >= Latest"
-    echo "alist_update=false" >> $GITHUB_ENV
+    echo "alist_update=0" >> $GITHUB_ENV
 else
     echo "Current < Latest"
-    echo "alist_update=true" >> $GITHUB_ENV
+    echo "alist_update=1" >> $GITHUB_ENV
 fi
