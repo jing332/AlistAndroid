@@ -1,5 +1,6 @@
 package com.github.jing332.alistandroid.service
 
+import alistlib.Alistlib
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -76,7 +77,7 @@ class AlistService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == ACTION_SHUTDOWN) {
             AList.shutdown()
-        }else if (!AList.hasRunning){
+        } else if (!AList.hasRunning) {
             AList.startup()
         }
 
@@ -97,7 +98,8 @@ class AlistService : Service() {
 
     private fun httpAddress(): String {
         val cfg = AListConfigManager.config()
-        return "http://localhost:${cfg.scheme.httpPort}"
+        val ip = Alistlib.getOutboundIPString()
+        return "http://${ip}:${cfg.scheme.httpPort}"
     }
 
     @Suppress("DEPRECATION")

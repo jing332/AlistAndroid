@@ -81,7 +81,7 @@ class AListDataProvider : DocumentsProvider() {
     }
 
     override fun isChildDocument(parentDocumentId: String?, documentId: String?): Boolean {
-//        Log.i(TAG, "isChildDocument: $parentDocumentId, $documentId")
+        Log.i(TAG, "isChildDocument: $parentDocumentId, $documentId")
 //        val dir = getFile(parentDocumentId)
 //        val filepath = getFile(documentId).absolutePath
 //
@@ -123,24 +123,28 @@ class AListDataProvider : DocumentsProvider() {
         val docId = documentId.docToPath()
 
         val cursor = MatrixCursor(projection ?: DEFAULT_DOCUMENT_PROJECTION)
-        var flags = 0
-        if (isRoot) {
-            flags = flags or Document.FLAG_DIR_SUPPORTS_CREATE
-        }
-        flags = flags or
-                Document.FLAG_SUPPORTS_DELETE or
-                Document.FLAG_SUPPORTS_RENAME or
-                Document.FLAG_SUPPORTS_WRITE
-
         val file = getFile(documentId)
+
+        var flags = 0
+        if (file.isDirectory) {
+            if (file.canWrite()) flags = Document.FLAG_DIR_SUPPORTS_CREATE
+        } else if (file.canWrite()) {
+            flags = Document.FLAG_SUPPORTS_WRITE
+        }
+        if (file.parentFile?.canWrite() == true) flags = flags or Document.FLAG_SUPPORTS_DELETE
+
+
+        val mimeType: String = if (isRoot) Document.MIME_TYPE_DIR else file.mimeType ?: "*"
+        if (mimeType.startsWith("image/")) flags = flags or Document.FLAG_SUPPORTS_THUMBNAIL
 
         cursor.newRow().apply {
             add(Document.COLUMN_FLAGS, flags)
             add(Document.COLUMN_DOCUMENT_ID, docId)
-            add(Document.COLUMN_MIME_TYPE, if (isRoot) Document.MIME_TYPE_DIR else file.mimeType)
+            add(Document.COLUMN_MIME_TYPE, mimeType)
             add(Document.COLUMN_DISPLAY_NAME, file.name)
             add(Document.COLUMN_LAST_MODIFIED, file.lastModified())
             add(Document.COLUMN_SIZE, file.length())
+            add(Document.COLUMN_ICON, R.drawable.alist_logo)
         }
 
         return cursor
@@ -245,6 +249,16 @@ class AListDataProvider : DocumentsProvider() {
         target.createNewFile()
 
         return getDocumentId(target.absolutePath)
+    }
+
+    override fun querySearchDocuments(
+        rootId: String?,
+        query: String?,
+        projection: Array<out String>?
+    ): Cursor {
+        Log.i(TAG, "querySearchDocuments: $rootId, $query, ${projection?.joinToString(",")}")
+
+        return super.querySearchDocuments(rootId, query, projection)
     }
 
 }
