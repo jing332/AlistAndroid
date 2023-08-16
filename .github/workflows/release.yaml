@@ -87,7 +87,9 @@ jobs:
 
       - name: Make "CHANGELOG.md"
         run: |
-          echo "\n\n## 未知CPU架构？请优先选择体积最大的APK" >> ${{ github.workspace }}/CHANGELOG.md
+          file="${{ github.workspace }}/CHANGELOG.md"
+          echo -e > "未知CPU架构? 那就选择体积最大的apk. \n#### 更新内容\n$(cat $file)"> $file
+          
 
       - uses: softprops/action-gh-release@v0.1.15
         with:
