@@ -16,7 +16,7 @@ object ToastUtils {
         runMain {
             Toast.makeText(
                 this,
-                getString(strId, args),
+                getString(strId, *args),
                 Toast.LENGTH_SHORT
             ).show()
         }

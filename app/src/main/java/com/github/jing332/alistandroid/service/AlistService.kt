@@ -73,9 +73,11 @@ class AlistService : Service() {
 
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        if (intent.action == ACTION_SHUTDOWN) {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_SHUTDOWN) {
             AList.shutdown()
+        }else if (!AList.hasRunning){
+            AList.startup()
         }
 
         return super.onStartCommand(intent, flags, startId)

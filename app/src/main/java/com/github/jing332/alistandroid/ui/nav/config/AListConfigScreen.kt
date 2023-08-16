@@ -2,6 +2,7 @@ package com.github.jing332.alistandroid.ui.nav.config
 
 import android.content.Intent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +43,7 @@ import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.constant.AppConst
 import com.github.jing332.alistandroid.model.alist.AList
 import com.github.jing332.alistandroid.ui.widgets.DenseOutlinedField
+import com.github.jing332.alistandroid.util.ClipboardUtils
 import com.github.jing332.alistandroid.util.ToastUtils.longToast
 import java.io.File
 
@@ -87,14 +90,32 @@ fun AListConfigScreen() {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(id = R.string.alist_config)) },
+                title = {
+                    Column {
+                        Text(
+                            stringResource(id = R.string.alist_config),
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Text(
+                            AList.dataPath,
+                            style = MaterialTheme.typography.bodySmall,
+                            lineHeight = MaterialTheme.typography.bodySmall.lineHeight * 0.75f,
+                            modifier = Modifier
+                                .clip(MaterialTheme.shapes.extraSmall)
+                                .clickable {
+                                    ClipboardUtils.copyText(AList.dataPath)
+                                    context.longToast(R.string.path_copied)
+                                }
+                        )
+                    }
+                },
                 actions = {
                     IconButton(onClick = {
                         openConfigJson()
                     }) {
                         Icon(Icons.Default.ModeEdit, stringResource(R.string.edit_config_json))
                     }
-                }
+                },
             )
         }
     )
@@ -108,7 +129,8 @@ fun AListConfigScreen() {
                 Text(
                     "TODO 本界面的功能暂未实现",
                     color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
                 ElevatedCard(Modifier.padding(8.dp)) {
                     Column(Modifier.padding(8.dp)) {

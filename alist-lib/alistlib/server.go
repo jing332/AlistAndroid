@@ -20,18 +20,6 @@ import (
 	"time"
 )
 
-type MyHook struct {
-	log.Hook
-
-	cb LogCallback
-}
-
-func (h MyHook) Fire(entry *log.Entry) error {
-	h.cb.OnLog(int16(entry.Level), entry.Message)
-
-	return nil
-}
-
 type LogCallback interface {
 	OnLog(level int16, msg string)
 }
@@ -42,17 +30,18 @@ type Event interface {
 }
 
 var event Event
+var logFormatter *internal.MyFormatter
 
 func Init(e Event, cb LogCallback) error {
 	event = e
 	cmd.Init()
-	formatter := &internal.MyFormatter{
+	logFormatter = &internal.MyFormatter{
 		OnLog: cb.OnLog,
 	}
 	if utils.Log == nil {
 		return errors.New("utils.log is nil")
 	} else {
-		utils.Log.SetFormatter(formatter)
+		utils.Log.SetFormatter(logFormatter)
 	}
 
 	return nil
