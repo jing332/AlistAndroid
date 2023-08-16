@@ -23,10 +23,10 @@ jobs:
           touch $VERSION_FILE
           ./check_alist.sh
 
-          echo "alist_version=$alist_version"
-          echo "alist_update=$alist_update"
+          echo "alist_version=${{ env.alist_version }}"
+          echo "alist_update=${{ env.alist_update }}" 
 
-          if [ $alist_update -eq 0 ]
+          if [ ${{ env.alist_update }} -eq 0 ]
           then
             echo "无更新"
           else
