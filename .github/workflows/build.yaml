@@ -6,6 +6,7 @@ on:
       - "master"
     paths-ignore:
       - "*.md"
+      - "release.yaml"
 
   workflow_dispatch:
     inputs:
