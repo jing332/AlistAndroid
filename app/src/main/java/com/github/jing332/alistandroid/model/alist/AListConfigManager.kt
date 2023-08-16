@@ -27,7 +27,7 @@ object AListConfigManager {
     suspend fun flowConfig(): Flow<AListConfig> = channelFlow {
         val obs = object : FileObserver(AList.configPath) {
             override fun onEvent(event: Int, p1: String?) {
-                if (listOf(FileObserver.CLOSE_NOWRITE, FileObserver.CLOSE_WRITE).contains(event))
+                if (listOf(CLOSE_NOWRITE, CLOSE_WRITE).contains(event))
                     runBlocking {
                         Log.d(TAG, "config.json changed: $event")
                         send((config()))

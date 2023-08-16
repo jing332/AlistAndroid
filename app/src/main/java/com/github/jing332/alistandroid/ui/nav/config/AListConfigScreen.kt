@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.constant.AppConst
 import com.github.jing332.alistandroid.model.alist.AList
@@ -49,7 +50,7 @@ import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AListConfigScreen() {
+fun AListConfigScreen(vm: AListConfigViewModel = viewModel()) {
     val context = LocalContext.current
     fun openConfigJson() {
         runCatching {
@@ -78,12 +79,7 @@ fun AListConfigScreen() {
 
     val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
-        /*scope.launch {
-            AListConfigManager.flowConfig().conflate().collect {
-                context.toast(it.scheme.httpPort.toString())
-            }
-            println("collect end")
-        }*/
+
     }
 
     var address by remember { mutableStateOf("0.0.0.0") }

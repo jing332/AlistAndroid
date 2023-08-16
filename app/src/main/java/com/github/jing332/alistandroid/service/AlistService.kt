@@ -81,8 +81,6 @@ class AlistService : Service() {
             AList.startup()
         }
 
-        throw RuntimeException("QWQ")
-
         return super.onStartCommand(intent, flags, startId)
     }
 
