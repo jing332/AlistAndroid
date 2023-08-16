@@ -131,6 +131,9 @@ dependencies {
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
     implementation 'androidx.appcompat:appcompat:1.6.1'
 
+
+    implementation("com.iqiyi.xcrash:xcrash-android-lib:3.0.0")
+
     implementation("com.mikepenz:aboutlibraries-core:${about_lib_version}")
     implementation("com.mikepenz:aboutlibraries-compose:${about_lib_version}")
     implementation("org.burnoutcrew.composereorderable:reorderable:0.9.6")

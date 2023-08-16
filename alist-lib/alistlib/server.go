@@ -4,6 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net"
+	"net/http"
+	"os"
+	"strconv"
+	"time"
+
 	"github.com/alist-org/alist/v3/alistlib/internal"
 	"github.com/alist-org/alist/v3/cmd"
 	"github.com/alist-org/alist/v3/cmd/flags"
@@ -13,11 +19,6 @@ import (
 	"github.com/alist-org/alist/v3/server"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"net"
-	"net/http"
-	"os"
-	"strconv"
-	"time"
 )
 
 type LogCallback interface {

@@ -70,7 +70,8 @@ fun AppUpdateDialog(
                 ) {
                     MarkdownText(
                         markdown = content, modifier = Modifier
-                            .padding(4.dp)
+                            .padding(4.dp),
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))

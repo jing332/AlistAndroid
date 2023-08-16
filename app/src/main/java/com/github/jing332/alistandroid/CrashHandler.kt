@@ -1,13 +1,10 @@
 package com.github.jing332.alistandroid
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
 import com.drake.net.utils.runMain
-import com.github.jing332.alistandroid.config.AppConfig
 import com.github.jing332.alistandroid.util.ClipboardUtils
 import com.github.jing332.alistandroid.util.FileUtil
 import com.github.jing332.alistandroid.util.ToastUtils.longToast

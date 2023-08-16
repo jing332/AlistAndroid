@@ -11,8 +11,8 @@ object AppUpdateChecker {
     fun checkUpdate(): UpdateResult {
         val rel = Github.getLatestRelease()
 
-        val current = rel.tagName.toNumberInt()
-        val latest = BuildConfig.VERSION_NAME.toNumberInt()
+        val latest = rel.tagName.toNumberInt()
+        val current = BuildConfig.VERSION_NAME.toNumberInt()
         Log.i(TAG, "checkUpdate: current=$current, latest=$latest")
 
         if (current < latest) {
@@ -22,10 +22,9 @@ object AppUpdateChecker {
                 content = rel.body,
                 downloadUrl = ass.browserDownloadUrl
             ).apply {
-                Log.i(TAG, "checkUpdate: hasUpdate=$this")
+                Log.i(TAG, "checkUpdate: hasUpdate=${this.downloadUrl}")
             }
         }
-
 
         return UpdateResult()
     }

@@ -1,5 +1,6 @@
 package com.github.jing332.alistandroid.ui
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,12 +12,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainViewModel : ViewModel() {
+    companion object {
+        const val TAG = "MainViewModel"
+    }
+
     var showUpdateDialog by mutableStateOf<UpdateResult?>(null)
 
     fun checkAppUpdate() {
         viewModelScope.launch(Dispatchers.IO) {
-            val ret = AppUpdateChecker.checkUpdate()
-            if (ret.hasUpdate()) showUpdateDialog = ret
+            runCatching {
+                val ret = AppUpdateChecker.checkUpdate()
+                if (ret.hasUpdate()) showUpdateDialog = ret
+            }.onFailure {
+                Log.e(TAG, "checkAppUpdate: ", it)
+            }
         }
     }
 }
