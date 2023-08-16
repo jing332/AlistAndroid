@@ -23,6 +23,8 @@ jobs:
           touch $VERSION_FILE
           ./check_alist.sh
 
+      - name: Shell
+        run: |
           echo "alist_version=${{ env.alist_version }}"
           echo "alist_update=${{ env.alist_update }}" 
 
