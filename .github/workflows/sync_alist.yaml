@@ -42,3 +42,9 @@ jobs:
             git commit -m "[bot] Update alist to ${{ env.alist_version }}"
             git push
           fi
+
+      - name: Run workflow release
+        run: |
+          gh workflow run release.yaml -R jing332/AlistAndroid
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
