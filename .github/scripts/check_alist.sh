@@ -11,7 +11,7 @@ echo "Latest AList version $LATEST_VER ${LATEST_VER_INT}"
 # VERSION_FILE="$GITHUB_WORKSPACE/alist_version.txt"
 
 VER=$(cat $VERSION_FILE)
-if [ -z VER ]; then
+if [ -z $VER ]; then
   VER="0"
 fi
 

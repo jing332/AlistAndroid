@@ -6,6 +6,7 @@ on:
       - "master"
     paths-ignore:
       - "*.md"
+      - "*.sh"
       - "release.yaml"
       - "sync_alist.yaml"
 
