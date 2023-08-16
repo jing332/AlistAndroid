@@ -28,7 +28,7 @@ jobs:
           echo "alist_version=${{ env.alist_version }}"
           echo "alist_update=${{ env.alist_update }}" 
 
-          if [ ${{ env.alist_update }} -eq 0 ]
+          if [ ${{ env.alist_update }} -eq 1 ]
           then
             echo "无更新"
           else
