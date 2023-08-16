@@ -1,4 +1,7 @@
-# AlistAndroid [![Test](https://github.com/jing332/AlistAndroid/actions/workflows/build.yaml/badge.svg)](https://github.com/jing332/AlistAndroid/actions/workflows/build.yaml)
+[![Release](https://github.com/jing332/AlistAndroid/actions/workflows/release.yaml/badge.svg)](https://github.com/jing332/AlistAndroid/actions/workflows/release.yaml)
+[![Test](https://github.com/jing332/AlistAndroid/actions/workflows/build.yaml/badge.svg)](https://github.com/jing332/AlistAndroid/actions/workflows/build.yaml)
+[![CheckAList](https://github.com/jing332/AlistAndroid/actions/workflows/sync_alist.yaml/badge.svg)](https://github.com/jing332/AlistAndroid/actions/workflows/sync_alist.yaml)
+# AlistAndroid 
 
 <img src="./images/1.jpg" height="150px">
 
@@ -15,3 +18,5 @@
 > Actions会自动构建最新的AList发布版，保证稳定性。
 
 ---
+
+- [Github Releases](https://github.com/jing332/AlistAndroid/releases)
