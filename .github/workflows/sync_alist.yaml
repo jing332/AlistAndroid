@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "0 * * * *" # 每小时执行一次
   workflow_dispatch:
+  push:
+    branches:
+      - "master"
+    paths:
+      - "sync_alist.yaml"  
 
 jobs:
   build:
@@ -14,7 +19,7 @@ jobs:
           cd $GITHUB_WORKSPACE/.github/scripts
           chmod +x ./*.sh
 
-          export VERSION_FILE="${$GITHUB_WORKSPACE}/alist_version.txt"
+          export VERSION_FILE="${GITHUB_WORKSPACE}/alist_version.txt"
           touch $VERSION_FILE
           ./check_alist.sh
 
