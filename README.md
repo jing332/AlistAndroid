@@ -2,6 +2,8 @@
 [![Test](https://github.com/jing332/AlistAndroid/actions/workflows/build.yaml/badge.svg)](https://github.com/jing332/AlistAndroid/actions/workflows/build.yaml)
 [![CheckAList](https://github.com/jing332/AlistAndroid/actions/workflows/sync_alist.yaml/badge.svg)](https://github.com/jing332/AlistAndroid/actions/workflows/sync_alist.yaml)
 
+#### 🚩　[FRP](https://github.com/fatedier/frp) 安卓版本：https://github.com/jing332/FrpAndroid
+
 # AlistAndroid
 
 AlistAndroid是一个基于AList的Android客户端，使用Kotlin编写，使用Jetpack Compose作为UI框架。
