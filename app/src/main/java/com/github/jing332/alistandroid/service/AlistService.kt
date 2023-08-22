@@ -44,12 +44,7 @@ class AlistService : Service() {
     private val mScope = CoroutineScope(Job())
     private val mNotificationReceiver = NotificationActionReceiver()
     private val mReceiver = MyReceiver()
-    private val mWakeLock by lazy {
-        powerManager.newWakeLock(
-            PowerManager.PARTIAL_WAKE_LOCK,
-            "alist:service"
-        )
-    }
+    private var mWakeLock: PowerManager.WakeLock? = null
 
     override fun onBind(p0: Intent?): IBinder? = null
 
@@ -57,8 +52,13 @@ class AlistService : Service() {
     override fun onCreate() {
         super.onCreate()
 
-        if (AppConfig.enabledWakeLock.value)
-            mWakeLock.acquire()
+        if (AppConfig.enabledWakeLock.value) {
+            mWakeLock = powerManager.newWakeLock(
+                PowerManager.PARTIAL_WAKE_LOCK,
+                "alist::service"
+            )
+            mWakeLock?.acquire()
+        }
 
         AppConst.localBroadcast.registerReceiver(
             mReceiver,
@@ -82,7 +82,8 @@ class AlistService : Service() {
     override fun onDestroy() {
         super.onDestroy()
 
-        mWakeLock.release()
+        mWakeLock?.release()
+        mWakeLock = null
 
         stopForeground(true)
 

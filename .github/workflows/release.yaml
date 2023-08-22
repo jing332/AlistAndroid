@@ -80,12 +80,6 @@ jobs:
           name: "AlistAndroid_${{env.ver_name}}"
           path: ${{ env.output }}/*.apk
 
-      - name: Make "CHANGELOG.md"
-        run: |
-          file="${{ github.workspace }}/CHANGELOG.md"
-          echo -e > "未知CPU架构? 那就选择体积最大的apk. \n#### 更新内容\n$(cat $file)"> $file
-          
-
       - uses: softprops/action-gh-release@v0.1.15
         with:
           name: ${{ env.ver_name }}

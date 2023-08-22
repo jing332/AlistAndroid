@@ -1,8 +1,10 @@
 package com.github.jing332.alistandroid.ui.nav.alist
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -88,6 +90,10 @@ fun ServerLogScreen(modifier: Modifier) {
                             lineHeight = LocalTextStyle.current.lineHeight * 0.8
                         )
                     }
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(60.dp))
                 }
 
             }

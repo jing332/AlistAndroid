@@ -2,27 +2,37 @@ package com.github.jing332.alistandroid.ui.nav.alist
 
 import android.content.Intent
 import android.content.IntentFilter
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddBusiness
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Password
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -30,9 +40,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -115,7 +128,7 @@ fun AListScreen() {
         }
     }
 
-    Scaffold(modifier = Modifier.imePadding(),
+    Scaffold(
         topBar = {
             TopAppBar(
                 title = {
@@ -186,31 +199,61 @@ fun AListScreen() {
             )
         }
     ) { paddingValues ->
-        Column(
+        Box(
             Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
                 .padding(horizontal = 8.dp)
-                .padding(bottom = 16.dp)
         ) {
             ServerLogScreen(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
+                    .fillMaxSize()
             )
 
-            Column(
-                Modifier
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.Bottom,
+            SwitchFloatingButton(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                switch = alistRunning
             ) {
-                Switch(
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally),
-                    checked = alistRunning,
-                    onCheckedChange = { switch() },
-                )
+                switch()
             }
         }
+    }
+}
+
+@Composable
+fun SwitchFloatingButton(modifier: Modifier, switch: Boolean, onSwitchChange: (Boolean) -> Unit) {
+    val targetIcon =
+        if (switch) Icons.Filled.Stop else Icons.Filled.Send
+    val rotationAngle by animateFloatAsState(targetValue = if (switch) 360f else 0f, label = "")
+
+    val color =
+        animateColorAsState(
+            targetValue = if (switch) MaterialTheme.colorScheme.inversePrimary else MaterialTheme.colorScheme.primaryContainer,
+            label = "",
+            animationSpec = tween(500, 0, LinearEasing)
+        )
+
+    FloatingActionButton(
+        modifier = modifier,
+        elevation = FloatingActionButtonDefaults.elevation(8.dp),
+        shape = CircleShape,
+        containerColor = color.value,
+        onClick = { onSwitchChange(!switch) }) {
+
+        Crossfade(targetState = targetIcon, label = "") {
+            Icon(
+                imageVector = it,
+                contentDescription = stringResource(id = if (switch) R.string.shutdown else R.string.start),
+                modifier = Modifier
+                    .rotate(rotationAngle)
+                    .graphicsLayer {
+                        rotationZ = rotationAngle
+                    }
+                    .size(if (switch) 42.dp else 32.dp)
+            )
+        }
+
     }
 }
