@@ -7,10 +7,29 @@ import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import com.github.jing332.alistandroid.util.ToastUtils.longToast
+import splitties.systemservices.powerManager
 
 object MyTools {
+    fun Context.isIgnoringBatteryOptimizations(): Boolean {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                powerManager.isIgnoringBatteryOptimizations(packageName)
+    }
+
+    @SuppressLint("BatteryLife")
+    fun Context.killBattery() {
+        runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isIgnoringBatteryOptimizations()) {
+                startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                    data = Uri.parse("package:$packageName")
+                })
+            }
+        }
+    }
+
     /* 添加快捷方式 */
     @SuppressLint("UnspecifiedImmutableFlag")
     @Suppress("DEPRECATION")

@@ -1,6 +1,7 @@
 package com.github.jing332.alistandroid.service
 
 import alistlib.Alistlib
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -12,8 +13,10 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
 import androidx.core.content.ContextCompat
 import com.github.jing332.alistandroid.R
+import com.github.jing332.alistandroid.config.AppConfig
 import com.github.jing332.alistandroid.constant.AppConst
 import com.github.jing332.alistandroid.model.alist.AList
 import com.github.jing332.alistandroid.model.alist.AListConfigManager
@@ -23,6 +26,7 @@ import com.github.jing332.alistandroid.util.ClipboardUtils
 import com.github.jing332.alistandroid.util.ToastUtils.toast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import splitties.systemservices.powerManager
 
 class AlistService : Service() {
     companion object {
@@ -40,11 +44,21 @@ class AlistService : Service() {
     private val mScope = CoroutineScope(Job())
     private val mNotificationReceiver = NotificationActionReceiver()
     private val mReceiver = MyReceiver()
+    private val mWakeLock by lazy {
+        powerManager.newWakeLock(
+            PowerManager.PARTIAL_WAKE_LOCK,
+            "alist:service"
+        )
+    }
 
     override fun onBind(p0: Intent?): IBinder? = null
 
+    @SuppressLint("WakelockTimeout")
     override fun onCreate() {
         super.onCreate()
+
+        if (AppConfig.enabledWakeLock.value)
+            mWakeLock.acquire()
 
         AppConst.localBroadcast.registerReceiver(
             mReceiver,
@@ -67,6 +81,9 @@ class AlistService : Service() {
     @Suppress("DEPRECATION")
     override fun onDestroy() {
         super.onDestroy()
+
+        mWakeLock.release()
+
         stopForeground(true)
 
         AppConst.localBroadcast.unregisterReceiver(mReceiver)

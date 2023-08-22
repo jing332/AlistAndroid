@@ -17,7 +17,9 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
+import com.github.jing332.alistandroid.config.AppConfig
 import com.github.jing332.alistandroid.model.ShortCuts
+import com.github.jing332.alistandroid.ui.MyTools.killBattery
 import com.github.jing332.alistandroid.ui.nav.BottomNavBar
 import com.github.jing332.alistandroid.ui.nav.NavigationGraph
 import kotlinx.coroutines.launch
@@ -38,7 +40,8 @@ class MainActivity : BaseComposeActivity() {
         super.onCreate(savedInstanceState)
 
         lifecycleScope.launch {
-            killBattery()
+            if (AppConfig.isFirstRun)
+                killBattery()
             ShortCuts.buildShortCuts(this@MainActivity)
         }
     }
@@ -81,16 +84,4 @@ class MainActivity : BaseComposeActivity() {
     }
 
 
-    @SuppressLint("BatteryLife")
-    private fun killBattery() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
-                kotlin.runCatching {
-                    startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
-                        data = Uri.parse("package:$packageName")
-                    })
-                }
-            }
-        }
-    }
 }
