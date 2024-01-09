@@ -25,7 +25,8 @@ jobs:
         run: |
           cd $GITHUB_WORKSPACE/alist-lib/scripts
           chmod +x *.sh
-          ./init_alist_*.sh
+          ./init_alist_core.sh
+          ./init_alist_web.sh
 
       - uses: actions/setup-go@v4
         with:

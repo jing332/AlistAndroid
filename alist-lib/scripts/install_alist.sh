@@ -2,19 +2,19 @@
 
 export dir=$PWD
 function build() {
-    echo "Building $1 $2 $3 ${PWD}"
+    echo "Building $1 $2 ${PWD}"
 
     export CGO_ENABLED=1
     export GOOS=android
-    export GOARCH="$2"
+    export GOARCH="$1"
 
     FN="libalist.so"
     rm -f ${FN}
 
     go build -ldflags "-s -w" -o ${FN}
 
-    mkdir -p ${dir}/../app/libs/$3
-    cp -f ${FN} ${dir}/../app/libs/$3
+    mkdir -p ${dir}/../app/libs/$2
+    cp -f ${FN} ${dir}/../app/libs/$2
 }
 
 #cp -f ./frp-*/conf/* ../app/src/main/assets/defaultData
