@@ -1,13 +1,37 @@
-TAG_NAME=$(curl -s https://api.github.com/repos/alist-org/alist/releases/latest | grep -o '"tag_name": ".*"' | cut -d'"' -f4)
+#!/bin/bash
 
-URL="https://github.com/alist-org/alist/archive/refs/tags/${TAG_NAME}.tar.gz"
-echo "Downloading alist ${TAG_NAME} from ${URL}"
+export dir=$PWD
+function build() {
+    echo "Building $1 $2 $3 ${PWD}"
 
-curl -L -o "alist.tgz" $URL
-tar xf "alist.tgz" --strip-components 1 -C ../
+    export CGO_ENABLED=1
+    export GOOS=android
+    export GOARCH="$2"
 
-echo "Write version to local.properties"
-cd ../../
-touch local.properties
-sed -i '/ALIST_VERSION/d' local.properties
-echo "ALIST_VERSION=${TAG_NAME}" >> local.properties
+    FN="libalist.so"
+    rm -f ${FN}
+
+    go build -ldflags "-s -w" -o ${FN}
+
+    mkdir -p ${dir}/../app/libs/$3
+    cp -f ${FN} ${dir}/../app/libs/$3
+}
+
+#cp -f ./frp-*/conf/* ../app/src/main/assets/defaultData
+
+build $1 $2
+
+# function build_all() {
+#     rm -f $1
+#     build $1 "arm" "armeabi-v7a"
+#     build $1 "arm64" "arm64-v8a"
+#     build $1 "386" "x86"
+#     build $1 "amd64" "x86_64"
+# }
+
+# cd frp-*/cmd
+# cd ./frpc
+# build_all frpc
+
+# cd ./frps
+# build_all frps

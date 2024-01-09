@@ -8,79 +8,73 @@ on:
       - "*.md"
       - "*.sh"
       - "release.yaml"
-      - "sync_alist.yaml"
+#      - "sync_frp.yaml"
 
   workflow_dispatch:
-    inputs:
-      debug_enabled:
-        type: boolean
-        description: "Enable debug mode"
-        required: false
-        default: false
 
 jobs:
-  build:
+  go:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        product: [ { name: "AListLatestRelease-最新Release版", value: latestRelease }, { name: "AListLatestCommit-最新提交版", value: latestCommit } ]
+        GO_ARCH: [ "386", amd64, arm, arm64 ]
+    steps:
+      - uses: actions/checkout@v3
 
-      fail-fast: false
+      - name: Download AList Source Code
+        run: |
+          cd $GITHUB_WORKSPACE/alist-lib/scripts
+          chmod +x *.sh
+          ./init_alist_*.sh
+
+      - uses: actions/setup-go@v4
+        with:
+          go-version: 1.21.5
+          cache-dependency-path: ${{ github.workspace }}/alist-lib/go.sum
+
+      - name: Build
+        run: |
+          cd $GITHUB_WORKSPACE/alist-lib
+          
+          GOARCH=${{ matrix.GO_ARCH }}                   
+          
+          declare -A goarch2cc=( ["arm64"]="aarch64-linux-android32-clang" ["arm"]="armv7a-linux-androideabi32-clang" ["amd64"]="x86_64-linux-android32-clang" ["386"]="i686-linux-android32-clang")
+          export CC="$ANDROID_NDK_LATEST_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/${goarch2cc[$GOARCH]}"
+          
+          declare -A arch2lib=( ["arm64"]="arm64-v8a" ["arm"]="armeabi-v7a" ["amd64"]="x86_64" ["386"]="x86")
+          export LIB="${arch2lib[$GOARCH]}"
+          
+          ./scripts/install_alist.sh $GOARCH $LIB  
+
+      - name: Upload to Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: "app_libs"
+          path: "${{ github.workspace }}/app/libs"
+
+  android:
+    runs-on: ubuntu-latest
+    needs: [ go ]
     env:
-      product: ${{ matrix.product.value }}
       output: "${{ github.workspace }}/app/build/outputs/apk/release"
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      - name: Setup tmate session
-        uses: mxschmitt/action-tmate@v3
-        if: false
-        with:
-          detached: true
-
       - uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 17
 
-      - uses: actions/setup-go@v4
-        with:
-          go-version: 1.20.3
-          cache: false
-          cache-dependency-path: ${{ github.workspace }}/alist-lib/go.sum
-
-      - uses: actions/cache@v3
-        name: Cache Go Modules
-        with:
-          path: |
-            ~/.cache/go-build
-            ~/go/pkg/mod
-          key: ${{ env.product }}-go-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ env.product }}-go-
-
-      - name: Build Alist-lib
-        run: |
-          cd alist-lib/scripts
-          chmod +x *.sh
-          
-          if [ $product == "latestRelease" ]; then
-            ./install_alist.sh
-          else
-            ./install_alist_commits.sh
-          fi
-          
-          ./install_web.sh
-
-          go install golang.org/x/mobile/cmd/gomobile@latest
-          gomobile init 
-          go get golang.org/x/mobile/bind
-          ./install_aar.sh all
-
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v2.4.2
+        uses: gradle/gradle-build-action@v2
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: "app_libs"
+          path: "${{ github.workspace }}/app/libs"
 
       - name: Init Signature
         run: |
@@ -95,40 +89,37 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
+        id: gradle
         run: ./gradlew assembleRelease -build-cache --parallel --daemon --warning-mode all
+
+      - name: Upload missing_rules.txt
+        if: failure() && steps.gradle.outcome != 'success'
+        uses: actions/upload-artifact@v3
+        with:
+          name: "missing_rules"
+          path: "${{ github.workspace }}/app/build/outputs/mapping/release/missing_rules.txt"
 
       - name: Init APP Version Name
         run: |
           echo "ver_name=$(grep -m 1 'versionName' ${{ env.output }}/output-metadata.json | cut -d\" -f4)" >> $GITHUB_ENV
 
-      #      - name: Upload To Lanzou
-      #        continue-on-error: true
-      #        run: |
-      #          path="${{ env.output }}"
-      #          LANZOU_FOLDER_ID="8141093"
-      #          export ylogin=""
-      #          export phpdisk_info=""
-      #
-      #          python3 $GITHUB_WORKSPACE/.github/scripts/lzy_web.py "$path" "$LANZOU_FOLDER_ID"
-      #          echo "[$(date -u -d '+8 hour' '+%Y.%m.%d %H:%M:%S')] 分享链接: "
-
       - name: Upload App To Artifact arm64-v8a
         if: success () || failure ()
         uses: actions/upload-artifact@v3
         with:
-          name: "Alist-${{ env.product }}-v${{ env.ver_name }}_arm64-v8a"
+          name: "AListAndroid-v${{ env.ver_name }}_arm64-v8a"
           path: "${{ env.output }}/*-v8a.apk"
 
       - name: Upload App To Artifact arm-v7a
         if: success () || failure ()
         uses: actions/upload-artifact@v3
         with:
-          name: "Alist-${{ env.product }}-v${{ env.ver_name }}_arm-v7a"
+          name: "AListAndroid-v${{ env.ver_name }}_arm-v7a"
           path: "${{ env.output }}/*-v7a.apk"
 
       - name: Upload App To Artifact x86
         if: success () || failure ()
         uses: actions/upload-artifact@v3
         with:
-          name: "Alist-${{ env.product }}-v${{ env.ver_name }}_x86"
+          name: "AListAndroid-v${{ env.ver_name }}_x86"
           path: "${{ env.output }}/*_x86.apk"
