@@ -7,10 +7,12 @@ plugins {
     id("com.mikepenz.aboutlibraries.plugin")
 }
 
-Properties pro = new Properties()
+def pro = new Properties()
 InputStream input = rootProject.file("local.properties").newDataInputStream()
 pro.load(input)
 input.close()
+
+def alistVersion = rootProject.file("alist_version").newReader().readLine()
 
 static def releaseTime() {
     return new Date().format("yy.MMddHH", TimeZone.getTimeZone("GMT+8"))
@@ -34,8 +36,7 @@ android {
             arg("room.expandProjection", "true")
         }
 
-        buildConfigField "String", "ALIST_VERSION", "\"" + pro["ALIST_VERSION"] + "\""
-        buildConfigField "String", "ALIST_COMMIT_SHA", "\"" + pro["ALIST_COMMIT_SHA"] + "\""
+        buildConfigField "String", "ALIST_VERSION", "\"" + alistVersion + "\""
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

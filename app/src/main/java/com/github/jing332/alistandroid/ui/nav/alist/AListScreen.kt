@@ -129,18 +129,9 @@ fun AListScreen() {
         topBar = {
             TopAppBar(
                 title = {
-                    val miniSha = remember {
-                        try {
-                            BuildConfig.ALIST_COMMIT_SHA.slice(0..6)
-                        } catch (_: Exception) {
-                            ""
-                        }
-                    }
                     Row {
                         Text(stringResource(R.string.app_name))
-                        Text(
-                            " - " + miniSha.ifEmpty { BuildConfig.ALIST_VERSION }
-                        )
+                        Text(" - " + BuildConfig.ALIST_VERSION)
                     }
                 },
                 actions = {

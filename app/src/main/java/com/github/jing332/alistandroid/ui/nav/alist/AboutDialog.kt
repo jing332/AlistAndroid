@@ -58,17 +58,10 @@ fun AboutDialog(onDismissRequest: () -> Unit) {
             }
 
             Column {
-                val miniSha = remember {
-                    try {
-                        BuildConfig.ALIST_COMMIT_SHA.slice(0..6)
-                    } catch (_: Exception) {
-                        ""
-                    }
-                }
                 SelectionContainer {
                     Column {
                         Text("APP - ${BuildConfig.VERSION_NAME}(${BuildConfig.VERSION_CODE})")
-                        Text("AList - ${miniSha.ifBlank { BuildConfig.ALIST_VERSION }}")
+                        Text("AList - ${BuildConfig.ALIST_VERSION}")
                     }
                 }
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
@@ -85,15 +78,13 @@ fun AboutDialog(onDismissRequest: () -> Unit) {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    "Github - AList (${miniSha.ifBlank { "Release" }})",
+                    "Github - AList (Release)",
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .clickable {
                             openUrl(
-                                if (BuildConfig.ALIST_COMMIT_SHA.isEmpty())
-                                    "https://github.com/alist-org/alist/releases/tag/${BuildConfig.ALIST_VERSION}"
-                                else "https://github.com/alist-org/alist/tree/${BuildConfig.ALIST_COMMIT_SHA}"
+                                "https://github.com/alist-org/alist/releases/tag/${BuildConfig.ALIST_VERSION}"
                             )
                         }
                         .padding(vertical = 8.dp)
