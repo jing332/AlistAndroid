@@ -169,6 +169,9 @@ dependencies {
     implementation("com.google.accompanist:accompanist-systemuicontroller:${accompanistVersion}")
     implementation("com.google.accompanist:accompanist-navigation-animation:${accompanistVersion}")
     implementation("com.google.accompanist:accompanist-permissions:${accompanistVersion}")
+    //webview
+    implementation("androidx.webkit:webkit:1.9.0")
+    implementation("com.google.accompanist:accompanist-webview:${accompanistVersion}")
 
 
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")

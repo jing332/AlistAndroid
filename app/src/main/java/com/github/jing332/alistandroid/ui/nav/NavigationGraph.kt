@@ -9,6 +9,7 @@ import com.github.jing332.alistandroid.ui.nav.alist.AListScreen
 import com.github.jing332.alistandroid.ui.nav.config.AListConfigScreen
 import com.github.jing332.alistandroid.ui.nav.provider.AListProviderScreen
 import com.github.jing332.alistandroid.ui.nav.settings.SettingsScreen
+import com.github.jing332.alistandroid.ui.nav.web.WebScreen
 
 @Composable
 fun NavigationGraph(navController: NavHostController, modifier: Modifier) {
@@ -23,6 +24,10 @@ fun NavigationGraph(navController: NavHostController, modifier: Modifier) {
 
         composable(BottomNavRoute.Settings.id) {
             SettingsScreen()
+        }
+
+        composable(BottomNavRoute.Web.id) {
+            WebScreen()
         }
 
         composable(BottomNavRoute.AListProvider.id) {

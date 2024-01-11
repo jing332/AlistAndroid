@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.PhoneAndroid
+import androidx.compose.material.icons.filled.Preview
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ sealed class BottomNavRoute(
         val routes = listOf(
             AListConfig,
             AList,
+            Web,
 //            AListProvider,
             Settings,
         )
@@ -38,5 +40,9 @@ sealed class BottomNavRoute(
 
     data object Settings : BottomNavRoute(R.string.settings, "settings", {
         Icon(Icons.Default.Settings, null)
+    })
+
+    data object Web : BottomNavRoute(R.string.web, "web", {
+        Icon(Icons.Default.Preview, null)
     })
 }
