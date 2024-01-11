@@ -1,8 +1,10 @@
 package com.github.jing332.alistandroid.ui.nav.config
 
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,34 +47,33 @@ import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.constant.AppConst
 import com.github.jing332.alistandroid.model.alist.AList
 import com.github.jing332.alistandroid.ui.widgets.DenseOutlinedField
+import com.github.jing332.alistandroid.util.AndroidUtils.performLongPress
 import com.github.jing332.alistandroid.util.ClipboardUtils
 import com.github.jing332.alistandroid.util.ToastUtils.longToast
 import java.io.File
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun AListConfigScreen(vm: AListConfigViewModel = viewModel()) {
     val context = LocalContext.current
-    fun openConfigJson() {
+    fun openFileUseExtApp(path:String, title: String, mimeType: String = "text/*") {
         runCatching {
-            val uri =
+            val uriProvider =
                 FileProvider.getUriForFile(
                     /* context = */ context,
                     /* authority = */ AppConst.fileProviderAuthor,
-                    /* file = */ File(AList.configPath)
+                    /* file = */ File(path)
                 )
-            val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+            val intent = Intent(Intent.ACTION_VIEW, uriProvider).apply {
                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                setDataAndType(uri, "text/*")
+                if (mimeType.isEmpty())
+                    setData(uriProvider)
+                else
+                    setDataAndType(uriProvider, mimeType)
             }
 
-            context.startActivity(
-                Intent.createChooser(
-                    intent,
-                    context.getString(R.string.edit_config_json)
-                )
-            )
+            context.startActivity(Intent.createChooser(intent, title))
         }.onFailure {
             context.longToast(it.toString())
         }
@@ -84,6 +86,7 @@ fun AListConfigScreen(vm: AListConfigViewModel = viewModel()) {
     val cfg = vm.config
 
     var address by remember { mutableStateOf("0.0.0.0") }
+    val view = LocalView.current
     Scaffold(
         topBar = {
             TopAppBar(
@@ -99,16 +102,26 @@ fun AListConfigScreen(vm: AListConfigViewModel = viewModel()) {
                             lineHeight = MaterialTheme.typography.bodySmall.lineHeight * 0.75f,
                             modifier = Modifier
                                 .clip(MaterialTheme.shapes.extraSmall)
-                                .clickable {
+                                .combinedClickable(onClick = {
+                                    openFileUseExtApp(
+                                        AList.dataPath,
+                                        context.getString(R.string.open_data_folder),
+                                        mimeType = ""
+                                    )
+                                }, onLongClick = {
+                                    view.performLongPress()
                                     ClipboardUtils.copyText(AList.dataPath)
                                     context.longToast(R.string.path_copied)
-                                }
+                                })
                         )
                     }
                 },
                 actions = {
                     IconButton(onClick = {
-                        openConfigJson()
+                        openFileUseExtApp(
+                            AList.configPath,
+                            context.getString(R.string.edit_config_json)
+                        )
                     }) {
                         Icon(Icons.Default.ModeEdit, stringResource(R.string.edit_config_json))
                     }
