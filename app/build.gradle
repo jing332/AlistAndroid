@@ -167,6 +167,7 @@ dependencies {
     def accompanistVersion = "0.31.3-beta"
     implementation("com.google.accompanist:accompanist-systemuicontroller:${accompanistVersion}")
     implementation("com.google.accompanist:accompanist-navigation-animation:${accompanistVersion}")
+    implementation("com.google.accompanist:accompanist-permissions:${accompanistVersion}")
 
 
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")

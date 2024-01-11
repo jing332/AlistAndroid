@@ -2,7 +2,6 @@ package com.github.jing332.alistandroid.model
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
@@ -21,8 +20,8 @@ object ShortCuts {
     private fun buildAlistSwitchShortCutInfo(context: Context): ShortcutInfoCompat {
         val msSwitchIntent = buildIntent<SwitchServerActivity>(context)
         return ShortcutInfoCompat.Builder(context, "alist_switch")
-            .setShortLabel(context.getString(R.string.alist_switch))
-            .setLongLabel(context.getString(R.string.alist_switch))
+            .setShortLabel(context.getString(R.string.app_switch))
+            .setLongLabel(context.getString(R.string.app_switch))
             .setIcon(IconCompat.createWithResource(context, R.drawable.alist_switch))
             .setIntent(msSwitchIntent)
             .build()
