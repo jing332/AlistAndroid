@@ -1,9 +1,18 @@
 package com.github.jing332.alistandroid.util
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.view.View
-import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.HapticFeedbackConstantsCompat
+import com.github.jing332.alistandroid.constant.AppConst
 
 object AndroidUtils {
     const val ABI_ARM = "armeabi-v7a"

@@ -2,9 +2,11 @@ package com.github.jing332.alistandroid.ui.nav.web
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.IntentFilter
 import android.view.ViewGroup.LayoutParams
 import android.webkit.JsResult
 import android.webkit.WebChromeClient
+import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -17,22 +19,29 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.jing332.alistandroid.R
+import com.github.jing332.alistandroid.service.AListService
+import com.github.jing332.alistandroid.ui.widgets.LocalBroadcastReceiver
 import com.github.jing332.alistandroid.util.ToastUtils.longToast
+import com.github.jing332.alistandroid.util.ToastUtils.toast
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
-internal fun WebView(modifier: Modifier = Modifier, url: String, vm: WebViewModel = viewModel()) {
+internal fun WebView(modifier: Modifier = Modifier, url: String) {
     var progress by remember { mutableIntStateOf(0) }
 
     var showAlertDialog by remember { mutableStateOf<Triple<String, String, JsResult>?>(null) }
@@ -64,6 +73,26 @@ internal fun WebView(modifier: Modifier = Modifier, url: String, vm: WebViewMode
         BackHandler(webView?.canGoBack() == true) {
             webView?.goBack()
         }
+
+        val context = LocalContext.current
+        val scope = rememberCoroutineScope()
+        LocalBroadcastReceiver(intentFilter = IntentFilter(AListService.ACTION_STATUS_CHANGED)) {
+            if (AListService.isRunning)
+                scope.launch {
+                    delay(2000)
+                    context.toast("reload")
+
+                }
+        }
+
+        LaunchedEffect(key1 = Unit) {
+            if (!AListService.isRunning) {
+                context.startService(Intent(context, AListService::class.java))
+                webView?.reload()
+            }
+        }
+
+
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = {
@@ -71,6 +100,16 @@ internal fun WebView(modifier: Modifier = Modifier, url: String, vm: WebViewMode
                 webView ?: run {
                     webView = WebView(it).apply {
                         webViewClient = object : WebViewClient() {
+                            override fun onReceivedError(
+                                view: WebView,
+                                request: WebResourceRequest,
+                                error: WebResourceError
+                            ) {
+                                super.onReceivedError(view, request, error)
+                                Thread.sleep(500)
+                                if (request.isForMainFrame) view.reload()
+                            }
+
                             override fun shouldOverrideUrlLoading(
                                 view: WebView?,
                                 request: WebResourceRequest?
