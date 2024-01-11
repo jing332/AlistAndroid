@@ -1,15 +1,6 @@
 name: Release
 
 on:
-  push:
-    branches:
-      - "master"
-    paths-ignore:
-      - "*.md"
-      - "*.sh"
-      - "build.yaml"
-  #      - "sync_frp.yaml"
-
   workflow_dispatch:
 
 jobs:
