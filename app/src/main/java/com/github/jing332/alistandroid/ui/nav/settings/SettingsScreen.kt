@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleUp
 import androidx.compose.material.icons.filled.FilePresent
+import androidx.compose.material.icons.filled.HdrAuto
 import androidx.compose.material.icons.filled.ScreenLockPortrait
 import androidx.compose.material.icons.filled.SupervisorAccount
 import androidx.compose.material3.Checkbox
@@ -164,6 +165,14 @@ fun SettingsScreen() {
         DividerPreference {
             Text(stringResource(id = R.string.web))
         }
+
+        var autoOpenPage by remember { AppConfig.autoOpenWebPage }
+        SwitchPreference(
+            title = { Text(stringResource(R.string.auto_open_web)) },
+            subTitle = { Text(stringResource(R.string.auto_open_web_desc)) },
+            icon = { Icon(Icons.Default.HdrAuto, null) },
+            checked = autoOpenPage
+        ) { autoOpenPage = it }
 
         BasePreferenceWidget(
             onClick = {

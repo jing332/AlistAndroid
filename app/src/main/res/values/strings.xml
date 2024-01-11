@@ -58,4 +58,6 @@
     <string name="clear_web_cache_desc">仅清空资源缓存，不影响用户数据。</string>
     <string name="cleared">已清除</string>
     <string name="confirm">确定</string>
+    <string name="auto_open_web">自动打开网页界面</string>
+    <string name="auto_open_web_desc">打开主界面时，自动跳转到网页界面。</string>
 </resources>

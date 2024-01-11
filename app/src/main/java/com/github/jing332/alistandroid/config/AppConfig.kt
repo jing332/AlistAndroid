@@ -27,4 +27,10 @@ object AppConfig {
         initialValue = false
     )
 
+    var autoOpenWebPage = mutableDataSaverStateOf(
+        dataSaverInterface = pref,
+        key = "autoOpenWebPage",
+        initialValue = false
+    )
+
 }
