@@ -1,22 +1,16 @@
 package com.github.jing332.alistandroid.ui.nav.config
 
 import android.content.Intent
-import android.net.Uri
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ModeEdit
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,7 +21,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,9 +31,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.github.jing332.alistandroid.R
@@ -56,7 +47,7 @@ import java.io.File
 @Composable
 fun AListConfigScreen(vm: AListConfigViewModel = viewModel()) {
     val context = LocalContext.current
-    fun openFileUseExtApp(path:String, title: String, mimeType: String = "text/*") {
+    fun openFileUseExtApp(path: String, title: String, mimeType: String = "text/*") {
         runCatching {
             val uriProvider =
                 FileProvider.getUriForFile(
@@ -79,13 +70,13 @@ fun AListConfigScreen(vm: AListConfigViewModel = viewModel()) {
         }
     }
 
-    val scope = rememberCoroutineScope()
+//    val scope = rememberCoroutineScope()
     LaunchedEffect(vm.hashCode()) {
         vm.init()
     }
-    val cfg = vm.config
-
-    var address by remember { mutableStateOf("0.0.0.0") }
+//    val cfg = vm.config
+//
+//    var address by remember { mutableStateOf("0.0.0.0") }
     val view = LocalView.current
     Scaffold(
         topBar = {
@@ -134,68 +125,75 @@ fun AListConfigScreen(vm: AListConfigViewModel = viewModel()) {
             Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
+
         ) {
             Column(Modifier.align(Alignment.CenterHorizontally)) {
-                Text(
-                    "TODO 本界面的功能暂未实现",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-                ElevatedCard(Modifier.padding(8.dp)) {
-                    Column(Modifier.padding(8.dp)) {
-                        Text(
-                            "Scheme",
-                            color = MaterialTheme.colorScheme.primary,
-
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.align(Alignment.Start)
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-                        var httpPort by remember { mutableIntStateOf(5244) }
-                        var httpsPort by remember { mutableIntStateOf(-1) }
-                        AnimatedVisibility(visible = httpPort == -1 && httpsPort == -1) {
-                            Text(
-                                stringResource(R.string.no_server_enable_warn_msg),
-                                color = MaterialTheme.colorScheme.error,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier
-                                    .align(Alignment.CenterHorizontally)
-                                    .padding(4.dp)
-                            )
-                        }
-
-                        DenseOutlinedField(enabled = !(httpPort == -1 && httpsPort == -1),
-                            label = { Text(stringResource(R.string.listen_address)) },
-                            modifier = Modifier.fillMaxWidth(),
-                            value = address,
-                            onValueChange = { address = it })
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Row {
-                            PortEdit(
-                                Modifier
-                                    .weight(1f)
-                                    .padding(end = 8.dp),
-                                "HTTP",
-                                value = httpPort,
-                                onValueChange = {
-                                    httpPort = it
-
-                                })
-
-                            PortEdit(
-                                Modifier
-                                    .weight(1f)
-                                    .padding(start = 8.dp),
-                                "HTTPS",
-                                value = httpsPort,
-                                onValueChange = { httpsPort = it })
-                        }
-                    }
-                }
+                Text(stringResource(id = R.string.open_data_folder_tips))
             }
         }
+
+
+//            Column(Modifier.align(Alignment.CenterHorizontally)) {
+//                Text(
+//                    "TODO 本界面的功能暂未实现",
+//                    color = MaterialTheme.colorScheme.error,
+//                    style = MaterialTheme.typography.titleLarge,
+//                    modifier = Modifier.align(Alignment.CenterHorizontally)
+//                )
+//                ElevatedCard(Modifier.padding(8.dp)) {
+//                    Column(Modifier.padding(8.dp)) {
+//                        Text(
+//                            "Scheme",
+//                            color = MaterialTheme.colorScheme.primary,
+//
+//                            fontWeight = FontWeight.Bold,
+//                            modifier = Modifier.align(Alignment.Start)
+//                        )
+//
+//                        Spacer(modifier = Modifier.height(8.dp))
+//                        var httpPort by remember { mutableIntStateOf(5244) }
+//                        var httpsPort by remember { mutableIntStateOf(-1) }
+//                        AnimatedVisibility(visible = httpPort == -1 && httpsPort == -1) {
+//                            Text(
+//                                stringResource(R.string.no_server_enable_warn_msg),
+//                                color = MaterialTheme.colorScheme.error,
+//                                fontWeight = FontWeight.Bold,
+//                                modifier = Modifier
+//                                    .align(Alignment.CenterHorizontally)
+//                                    .padding(4.dp)
+//                            )
+//                        }
+//
+//                        DenseOutlinedField(enabled = !(httpPort == -1 && httpsPort == -1),
+//                            label = { Text(stringResource(R.string.listen_address)) },
+//                            modifier = Modifier.fillMaxWidth(),
+//                            value = address,
+//                            onValueChange = { address = it })
+//                        Spacer(modifier = Modifier.height(24.dp))
+//                        Row {
+//                            PortEdit(
+//                                Modifier
+//                                    .weight(1f)
+//                                    .padding(end = 8.dp),
+//                                "HTTP",
+//                                value = httpPort,
+//                                onValueChange = {
+//                                    httpPort = it
+//
+//                                })
+//
+//                            PortEdit(
+//                                Modifier
+//                                    .weight(1f)
+//                                    .padding(start = 8.dp),
+//                                "HTTPS",
+//                                value = httpsPort,
+//                                onValueChange = { httpsPort = it })
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 }
 

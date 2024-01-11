@@ -24,15 +24,15 @@ import com.github.jing332.alistandroid.model.alist.AListConfigManager
 import com.github.jing332.alistandroid.ui.MainActivity
 import com.github.jing332.alistandroid.ui.theme.androidColor
 import com.github.jing332.alistandroid.util.ClipboardUtils
-import com.github.jing332.alistandroid.util.ToastUtils.longToast
 import com.github.jing332.alistandroid.util.ToastUtils.toast
+import com.github.jing332.utils.NativeLib
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import splitties.systemservices.powerManager
 
-class AlistService : Service() {
+class AListService : Service() {
     companion object {
         const val TAG = "AlistService"
         const val ACTION_SHUTDOWN =
@@ -75,10 +75,7 @@ class AlistService : Service() {
             mWakeLock?.acquire()
         }
 
-        AppConst.localBroadcast.registerReceiver(
-            mReceiver,
-            IntentFilter(AList.ACTION_STATUS_CHANGED)
-        )
+        AppConst.localBroadcast.registerReceiver(mReceiver, IntentFilter(ACTION_STATUS_CHANGED))
         ContextCompat.registerReceiver(
             this,
             mNotificationReceiver,
@@ -115,7 +112,6 @@ class AlistService : Service() {
                 isRunning = false
                 withMain {
                     if (ret != 0) toast("code: $ret")
-                    stopSelf()
                     notifyStatusChanged()
                 }
             }
@@ -127,8 +123,8 @@ class AlistService : Service() {
     @Suppress("DEPRECATION")
     inner class MyReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == AList.ACTION_STATUS_CHANGED) {
-                if (!AList.hasRunning) {
+            if (intent?.action == ACTION_STATUS_CHANGED) {
+                if (!isRunning) {
                     stopForeground(true)
                     stopSelf()
                 }
@@ -138,9 +134,8 @@ class AlistService : Service() {
 
     private fun httpAddress(): String {
         val cfg = AListConfigManager.config()
-//        val ip = Alistlib.getOutboundIPString()
-//        return "http://${ip}:${cfg.scheme.httpPort}"
-        return "none"
+        val ip = NativeLib.getLocalIp()
+        return "http://${ip}:${cfg.scheme.httpPort}"
     }
 
     @Suppress("DEPRECATION")
@@ -206,7 +201,7 @@ class AlistService : Service() {
             .setSmallIcon(smallIconRes)
             .setContentIntent(pendingIntent)
             .addAction(0, getString(R.string.shutdown), shutdownAction)
-//            .addAction(0, getString(R.string.copy_address), copyAddressPendingIntent)
+            .addAction(0, getString(R.string.copy_address), copyAddressPendingIntent)
             .build()
 
         // 前台服务

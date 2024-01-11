@@ -49,4 +49,5 @@
     <string name="wake_lock_desc">打开可防止锁屏后CPU休眠，但在部分系统可能会导致杀后台</string>
     <string name="importent_settings">重要设置</string>
     <string name="open_data_folder">打开data文件夹</string>
+    <string name="open_data_folder_tips">点按上方路径选择“MT管理器”打开data文件夹</string>
 </resources>

@@ -1,11 +1,9 @@
 package com.github.jing332.alistandroid.ui
 
+import android.Manifest
 import android.annotation.SuppressLint
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -22,8 +20,10 @@ import com.github.jing332.alistandroid.model.ShortCuts
 import com.github.jing332.alistandroid.ui.MyTools.killBattery
 import com.github.jing332.alistandroid.ui.nav.BottomNavBar
 import com.github.jing332.alistandroid.ui.nav.NavigationGraph
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.launch
-import splitties.systemservices.powerManager
 
 val LocalMainViewModel = staticCompositionLocalOf<MainViewModel> {
     error("No MainViewModel provided")
@@ -46,11 +46,20 @@ class MainActivity : BaseComposeActivity() {
         }
     }
 
-
+    @OptIn(ExperimentalPermissionsApi::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     @Composable
     override fun Content() {
         val scope = rememberCoroutineScope()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // A13
+            val notificationPermission =
+                rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+
+            if (!notificationPermission.status.isGranted)
+                LaunchedEffect(key1 = notificationPermission) {
+                    notificationPermission.launchPermissionRequest()
+                }
+        }
 
         if (vm.showUpdateDialog != null) {
             val data = vm.showUpdateDialog ?: return

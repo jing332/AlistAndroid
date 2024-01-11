@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -21,7 +20,6 @@ import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AddBusiness
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Password
-import androidx.compose.material.icons.filled.Send
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DropdownMenu
@@ -41,7 +39,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,7 +51,8 @@ import androidx.compose.ui.unit.dp
 import com.github.jing332.alistandroid.BuildConfig
 import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.model.alist.AList
-import com.github.jing332.alistandroid.service.AlistService
+import com.github.jing332.alistandroid.service.AListService
+import com.github.jing332.alistandroid.service.AListService.Companion.ACTION_STATUS_CHANGED
 import com.github.jing332.alistandroid.ui.LocalMainViewModel
 import com.github.jing332.alistandroid.ui.MyTools
 import com.github.jing332.alistandroid.ui.SwitchServerActivity
@@ -67,16 +65,16 @@ fun AListScreen() {
     val context = LocalContext.current
     val mainVM = LocalMainViewModel.current
     val view = LocalView.current
-    var alistRunning by remember { mutableStateOf(AlistService.isRunning) }
+    var alistRunning by remember { mutableStateOf(AListService.isRunning) }
 
-    LocalBroadcastReceiver(intentFilter = IntentFilter(AlistService.ACTION_STATUS_CHANGED)) {
-        if (it?.action == AList.ACTION_STATUS_CHANGED)
-            alistRunning = AlistService.isRunning
+    LocalBroadcastReceiver(intentFilter = IntentFilter(ACTION_STATUS_CHANGED)) {
+        if (it?.action == ACTION_STATUS_CHANGED)
+            alistRunning = AListService.isRunning
     }
 
     fun switch() {
-        context.startService(Intent(context, AlistService::class.java).apply {
-            action = if (alistRunning) AlistService.ACTION_SHUTDOWN else ""
+        context.startService(Intent(context, AListService::class.java).apply {
+            action = if (alistRunning) AListService.ACTION_SHUTDOWN else ""
         })
         alistRunning = !alistRunning
     }

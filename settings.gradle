@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "AlistAndroid"
 include ':app'
+include ':utils'

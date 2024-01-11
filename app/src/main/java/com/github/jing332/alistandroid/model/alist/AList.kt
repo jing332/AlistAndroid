@@ -1,16 +1,14 @@
 package com.github.jing332.alistandroid.model.alist
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.util.Log
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.app
 import com.github.jing332.alistandroid.constant.LogLevel
 import com.github.jing332.alistandroid.data.appDb
 import com.github.jing332.alistandroid.data.entities.ServerLog
 import com.github.jing332.alistandroid.data.entities.ServerLog.Companion.evalLog
-import com.github.jing332.alistandroid.service.AlistService
+import com.github.jing332.alistandroid.service.AListService
 import com.github.jing332.alistandroid.util.FileUtils.readAllText
 import com.github.jing332.alistandroid.util.StringUtils.removeAnsiCodes
 import com.github.jing332.alistandroid.util.ToastUtils.longToast
@@ -24,13 +22,6 @@ import java.io.IOException
 import kotlin.coroutines.coroutineContext
 
 object AList {
-    const val ACTION_STATUS_CHANGED =
-        "com.github.jing332.alistandroid.AList.ACTION_STATUS_CHANGED"
-
-    const val TYPE_HTTP = "http"
-    const val TYPE_HTTPS = "https"
-    const val TYPE_UNIX = "unix"
-
     private val execPath by lazy {
         context.applicationInfo.nativeLibraryDir + File.separator + "libalist.so"
     }
@@ -43,26 +34,8 @@ object AList {
     val configPath: String
         get() = "$dataPath${File.separator}config.json"
 
-    /**
-     * 是否有服务正在运行
-     */
-    val hasRunning: Boolean
-        get() = false
-
-    fun init() {
-//        Alistlib.setConfigData(dataPath)
-//            Alistlib.setConfigDebug(BuildConfig.DEBUG)
-//        Alistlib.setConfigLogStd(true)
-
-//        Log.i(AlistService.TAG, "level=${level}, msg=$msg")
-//        appDb.serverLogDao.insert(ServerLog(level = level.toInt(), message = msg))
-    }
 
     fun setAdminPassword(pwd: String) {
-        if (!hasRunning) {
-            init()
-        }
-
         val log = execWithParams(
             redirect = true,
             params = arrayOf("admin", "set", pwd, "--data", dataPath)
@@ -71,7 +44,7 @@ object AList {
     }
 
 
-    fun shutdown(timeout: Long = 5000L) {
+    fun shutdown() {
         runCatching {
             mProcess?.destroy()
         }.onFailure {
@@ -86,7 +59,7 @@ object AList {
             errorStream.bufferedReader().use {
                 while (coroutineContext.isActive) {
                     val line = it.readLine() ?: break
-                    Log.d(AlistService.TAG, "Process errorStream: $line")
+                    Log.d(AListService.TAG, "Process errorStream: $line")
                     onNewLine(line)
                 }
             }
@@ -98,7 +71,7 @@ object AList {
             inputStream.bufferedReader().use {
                 while (coroutineContext.isActive) {
                     val line = it.readLine() ?: break
-                    Log.d(AlistService.TAG, "Process inputStream: $line")
+                    Log.d(AListService.TAG, "Process inputStream: $line")
                     onNewLine(line)
                 }
             }

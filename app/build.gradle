@@ -128,8 +128,9 @@ android {
 
 dependencies {
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
-    implementation 'androidx.appcompat:appcompat:1.6.1'
+    implementation project(":utils")
 
+    implementation 'androidx.appcompat:appcompat:1.6.1'
 
     implementation("com.iqiyi.xcrash:xcrash-android-lib:3.0.0")
 

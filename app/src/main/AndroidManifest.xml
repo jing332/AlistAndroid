@@ -47,7 +47,7 @@
         tools:ignore="UnusedAttribute">
 
         <service
-            android:name=".service.AlistService"
+            android:name=".service.AListService"
             android:exported="true"
             android:foregroundServiceType="systemExempted"
             tools:ignore="ExportedService" />

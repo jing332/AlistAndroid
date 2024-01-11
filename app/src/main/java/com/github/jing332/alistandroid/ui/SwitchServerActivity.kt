@@ -4,22 +4,21 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.github.jing332.alistandroid.R
-import com.github.jing332.alistandroid.model.alist.AList
-import com.github.jing332.alistandroid.service.AlistService
+import com.github.jing332.alistandroid.service.AListService
 import com.github.jing332.alistandroid.util.ToastUtils.toast
 
 class SwitchServerActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (AList.hasRunning) {
+        if (AListService.isRunning) {
             toast(R.string.alist_shut_downing)
-            startService(Intent(this, AlistService::class.java).apply {
-                action = AlistService.ACTION_SHUTDOWN
+            startService(Intent(this, AListService::class.java).apply {
+                action = AListService.ACTION_SHUTDOWN
             })
         } else {
             toast(R.string.alist_starting)
-            startService(Intent(this, AlistService::class.java))
+            startService(Intent(this, AListService::class.java))
         }
 
         finish()
