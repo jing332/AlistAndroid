@@ -6,14 +6,22 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.Settings
+import android.webkit.CookieManager
+import android.webkit.CookieSyncManager
+import android.webkit.WebStorage
+import android.webkit.WebView
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowCircleUp
+import androidx.compose.material.icons.filled.FilePresent
 import androidx.compose.material.icons.filled.ScreenLockPortrait
+import androidx.compose.material.icons.filled.SupervisorAccount
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,10 +43,12 @@ import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.config.AppConfig
 import com.github.jing332.alistandroid.ui.MyTools.isIgnoringBatteryOptimizations
 import com.github.jing332.alistandroid.ui.MyTools.killBattery
+import com.github.jing332.alistandroid.util.ToastUtils.toast
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 
+@Suppress("DEPRECATION")
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SettingsScreen() {
@@ -151,5 +161,57 @@ fun SettingsScreen() {
             icon = { Icon(Icons.Default.ScreenLockPortrait, contentDescription = null) }
         )
 
+        DividerPreference {
+            Text(stringResource(id = R.string.web))
+        }
+
+        BasePreferenceWidget(
+            onClick = {
+                WebView(context).clearCache(true)
+                context.toast(R.string.cleared)
+            },
+            icon = { Icon(Icons.Default.FilePresent, null) },
+            title = { Text(stringResource(id = R.string.clear_web_cache)) },
+            subTitle = { Text(stringResource(id = R.string.clear_web_cache_desc)) }
+        )
+
+        var showClearDataMenu by remember { mutableStateOf(false) }
+        BasePreferenceWidget(
+            onClick = { showClearDataMenu = true },
+            icon = { Icon(Icons.Default.SupervisorAccount, null) },
+            title = { Text(stringResource(id = R.string.clear_web_data)) }, subTitle = {
+                Text(stringResource(id = R.string.clear_web_data_desc))
+            }, content = {
+                DropdownMenu(
+                    expanded = showClearDataMenu,
+                    onDismissRequest = { showClearDataMenu = false }) {
+                    DropdownMenuItem(text = {
+                        Text(
+                            stringResource(R.string.confirm),
+                            color = MaterialTheme.colorScheme.error,
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                        )
+                    }, onClick = {
+                        showClearDataMenu = false
+
+                        context.deleteDatabase("webview.db")
+                        context.deleteDatabase("webviewCache.db")
+
+                        CookieSyncManager.createInstance(context)
+                        val cookieManager = CookieManager.getInstance()
+                        cookieManager.removeSessionCookies(null)
+                        cookieManager.removeAllCookie()
+                        cookieManager.flush()
+
+                        WebStorage.getInstance().deleteAllData()
+
+                        context.toast(R.string.cleared)
+                    })
+                    DropdownMenuItem(
+                        text = { Text(stringResource(id = R.string.cancel)) },
+                        onClick = { showClearDataMenu = false })
+                }
+            }
+        )
     }
 }

@@ -51,4 +51,11 @@
     <string name="open_data_folder">打开data文件夹</string>
     <string name="open_data_folder_tips">点按上方路径选择“MT管理器”打开data文件夹</string>
     <string name="web">网页</string>
+    <string name="togo_app_failed">跳转失败: %1$s</string>
+    <string name="clear_web_data">清空网页数据</string>
+    <string name="clear_web_cache">清空网页缓存</string>
+    <string name="clear_web_data_desc">清空网页数据库、Cookie、DomStorage。</string>
+    <string name="clear_web_cache_desc">仅清空资源缓存，不影响用户数据。</string>
+    <string name="cleared">已清除</string>
+    <string name="confirm">确定</string>
 </resources>
