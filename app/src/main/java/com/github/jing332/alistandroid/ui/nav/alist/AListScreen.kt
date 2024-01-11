@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.AddBusiness
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Password
@@ -66,20 +67,18 @@ fun AListScreen() {
     val context = LocalContext.current
     val mainVM = LocalMainViewModel.current
     val view = LocalView.current
-    var alistRunning by remember { mutableStateOf(AList.hasRunning) }
+    var alistRunning by remember { mutableStateOf(AlistService.isRunning) }
 
-    LocalBroadcastReceiver(intentFilter = IntentFilter(AList.ACTION_STATUS_CHANGED)) {
-        println(it?.action)
-        if (it?.action == AList.ACTION_STATUS_CHANGED) {
-            alistRunning = AList.hasRunning
-        }
+    LocalBroadcastReceiver(intentFilter = IntentFilter(AlistService.ACTION_STATUS_CHANGED)) {
+        if (it?.action == AList.ACTION_STATUS_CHANGED)
+            alistRunning = AlistService.isRunning
     }
 
     fun switch() {
         context.startService(Intent(context, AlistService::class.java).apply {
             action = if (alistRunning) AlistService.ACTION_SHUTDOWN else ""
         })
-//        alistRunning = !alistRunning
+        alistRunning = !alistRunning
     }
 
     var showPwdDialog by remember { mutableStateOf(false) }
@@ -225,7 +224,7 @@ fun AListScreen() {
 @Composable
 fun SwitchFloatingButton(modifier: Modifier, switch: Boolean, onSwitchChange: (Boolean) -> Unit) {
     val targetIcon =
-        if (switch) Icons.Filled.Stop else Icons.Filled.Send
+        if (switch) Icons.Filled.Stop else Icons.AutoMirrored.Filled.Send
     val rotationAngle by animateFloatAsState(targetValue = if (switch) 360f else 0f, label = "")
 
     val color =

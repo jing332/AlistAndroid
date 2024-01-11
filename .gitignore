@@ -1,4 +1,5 @@
 # Project exclude paths
+/.idea/
 /.gradle/
 /app/build/
 /build/
@@ -16,4 +17,5 @@ alist-main
 *.tgz
 *.jar
 *.zip
+*.so
 

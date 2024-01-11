@@ -21,4 +21,9 @@ object StringUtils {
     fun String.toNumberInt(): Int {
         return this.replace(Regex("[^0-9]"), "").toIntOrNull() ?: 0
     }
+
+    fun String.removeAnsiCodes(): String {
+        val ansiRegex = Regex("\\x1B\\[[0-9;]*[m|K]")
+        return this.replace(ansiRegex, "")
+    }
 }

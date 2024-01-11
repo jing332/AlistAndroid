@@ -1,6 +1,5 @@
 package com.github.jing332.alistandroid.service
 
-import alistlib.Alistlib
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
@@ -15,6 +14,8 @@ import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import androidx.core.content.ContextCompat
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.drake.net.utils.withMain
 import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.config.AppConfig
 import com.github.jing332.alistandroid.constant.AppConst
@@ -23,9 +24,12 @@ import com.github.jing332.alistandroid.model.alist.AListConfigManager
 import com.github.jing332.alistandroid.ui.MainActivity
 import com.github.jing332.alistandroid.ui.theme.androidColor
 import com.github.jing332.alistandroid.util.ClipboardUtils
+import com.github.jing332.alistandroid.util.ToastUtils.longToast
 import com.github.jing332.alistandroid.util.ToastUtils.toast
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import splitties.systemservices.powerManager
 
 class AlistService : Service() {
@@ -37,8 +41,13 @@ class AlistService : Service() {
         const val ACTION_COPY_ADDRESS =
             "com.github.jing332.alistandroid.service.AlistService.ACTION_COPY_ADDRESS"
 
+        const val ACTION_STATUS_CHANGED =
+            "com.github.jing332.alistandroid.service.AlistService.ACTION_STATUS_CHANGED"
+
         const val NOTIFICATION_CHAN_ID = "alist_server"
         const val FOREGROUND_ID = 5224
+
+        var isRunning: Boolean = false
     }
 
     private val mScope = CoroutineScope(Job())
@@ -47,6 +56,12 @@ class AlistService : Service() {
     private var mWakeLock: PowerManager.WakeLock? = null
 
     override fun onBind(p0: Intent?): IBinder? = null
+
+    @Suppress("DEPRECATION")
+    private fun notifyStatusChanged() {
+        LocalBroadcastManager.getInstance(this)
+            .sendBroadcast(Intent(ACTION_STATUS_CHANGED))
+    }
 
     @SuppressLint("WakelockTimeout")
     override fun onCreate() {
@@ -73,8 +88,6 @@ class AlistService : Service() {
             ContextCompat.RECEIVER_EXPORTED
         )
         initNotification()
-
-        AList.startup();
     }
 
 
@@ -89,14 +102,23 @@ class AlistService : Service() {
 
         AppConst.localBroadcast.unregisterReceiver(mReceiver)
         unregisterReceiver(mNotificationReceiver)
-
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent?.action == ACTION_SHUTDOWN) {
             AList.shutdown()
-        } else if (!AList.hasRunning) {
-            AList.startup()
+        } else {
+            isRunning = true
+            notifyStatusChanged()
+            mScope.launch(Dispatchers.IO) {
+                val ret = AList.startup()
+                isRunning = false
+                withMain {
+                    if (ret != 0) toast("code: $ret")
+                    stopSelf()
+                    notifyStatusChanged()
+                }
+            }
         }
 
         return super.onStartCommand(intent, flags, startId)
@@ -116,8 +138,9 @@ class AlistService : Service() {
 
     private fun httpAddress(): String {
         val cfg = AListConfigManager.config()
-        val ip = Alistlib.getOutboundIPString()
-        return "http://${ip}:${cfg.scheme.httpPort}"
+//        val ip = Alistlib.getOutboundIPString()
+//        return "http://${ip}:${cfg.scheme.httpPort}"
+        return "none"
     }
 
     @Suppress("DEPRECATION")
@@ -183,7 +206,7 @@ class AlistService : Service() {
             .setSmallIcon(smallIconRes)
             .setContentIntent(pendingIntent)
             .addAction(0, getString(R.string.shutdown), shutdownAction)
-            .addAction(0, getString(R.string.copy_address), copyAddressPendingIntent)
+//            .addAction(0, getString(R.string.copy_address), copyAddressPendingIntent)
             .build()
 
         // 前台服务

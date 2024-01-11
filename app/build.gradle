@@ -45,9 +45,6 @@ android {
         buildConfig true
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
-    }
     signingConfigs {
         release {
             storeFile file(pro["KEY_PATH"])
@@ -100,7 +97,9 @@ android {
             universalApk true
         }
     }
-
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.7"
+    }
     compileOptions {
 //        coreLibraryDesugaringEnabled true
         sourceCompatibility JavaVersion.VERSION_17
@@ -141,11 +140,11 @@ dependencies {
     implementation("com.github.jeziellago:compose-markdown:0.3.4")
 
     implementation("androidx.documentfile:documentfile:1.0.1")
-    implementation("androidx.core:core-ktx:1.10.1")
+    implementation("androidx.core:core-ktx:1.12.0")
 
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("com.charleskorn.kaml:kaml:0.55.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 
     // Room
     implementation("androidx.room:room-runtime:$room_version")
@@ -156,12 +155,12 @@ dependencies {
     // IO & NET
     implementation 'com.squareup.okio:okio:3.3.0'
     implementation 'com.squareup.okhttp3:okhttp:4.11.0'
-    implementation 'com.github.liangjingkanji:Net:3.5.8'
+    implementation 'com.github.liangjingkanji:Net:3.6.4'
 
-    implementation("com.google.android.exoplayer:exoplayer-core:2.19.0")
+    implementation("com.google.android.exoplayer:exoplayer-core:2.19.1")
 
     implementation("org.apache.commons:commons-lang3:3.12.0")
-    implementation("com.github.FunnySaltyFish.ComposeDataSaver:data-saver:v1.1.6")
+    implementation("com.github.FunnySaltyFish.ComposeDataSaver:data-saver:v1.1.8")
     implementation("com.louiscad.splitties:splitties-systemservices:3.0.0")
     implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
 
@@ -171,12 +170,12 @@ dependencies {
 
 
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
-    implementation("androidx.navigation:navigation-compose:2.7.0")
+    implementation("androidx.navigation:navigation-compose:2.7.6")
 
-    implementation 'androidx.activity:activity-compose:1.7.2'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1'
+    implementation 'androidx.activity:activity-compose:1.8.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
 //    def composeBom = platform('androidx.compose:compose-bom:2023.06.01')
-    def composeBom = platform("dev.chrisbanes.compose:compose-bom:2023.07.00-alpha02")
+    def composeBom = platform("dev.chrisbanes.compose:compose-bom:2023.12.00-alpha04")
     implementation composeBom
     androidTestImplementation composeBom
 
