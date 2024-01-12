@@ -77,7 +77,11 @@ fun AppDialog(
     buttons: @Composable BoxScope.() -> Unit = {
         TextButton(onClick = onDismissRequest) { Text(stringResource(id = R.string.close)) }
     },
-) = BasicAlertDialog(modifier = modifier, onDismissRequest = onDismissRequest, properties = properties) {
+) = BasicAlertDialog(
+    modifier = modifier,
+    onDismissRequest = onDismissRequest,
+    properties = properties
+) {
     Surface(
         tonalElevation = 8.dp, shadowElevation = 8.dp, shape = MaterialTheme.shapes.extraLarge
     ) {
@@ -98,6 +102,7 @@ fun AppDialog(
                 Modifier
                     .weight(weight = 1f, fill = false)
                     .align(Alignment.Start)
+                    .padding(vertical = 8.dp)
             ) {
                 CompositionLocalProvider(LocalTextStyle provides MaterialTheme.typography.titleMedium) {
                     content()

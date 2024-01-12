@@ -1,16 +1,24 @@
 package com.github.jing332.alistandroid.ui.nav.web
 
 import android.annotation.SuppressLint
+import android.app.DownloadManager
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.Uri
+import android.os.Environment
+import android.util.Log
 import android.view.ViewGroup.LayoutParams
 import android.webkit.JsResult
+import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,10 +42,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.github.jing332.alistandroid.R
 import com.github.jing332.alistandroid.service.AListService
 import com.github.jing332.alistandroid.ui.widgets.LocalBroadcastReceiver
+import com.github.jing332.alistandroid.util.StringUtils.parseToMap
 import com.github.jing332.alistandroid.util.ToastUtils.longToast
 import com.github.jing332.alistandroid.util.ToastUtils.toast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
@@ -93,6 +103,31 @@ internal fun WebView(modifier: Modifier = Modifier, url: String) {
         }
 
 
+        var showDownloadDialog by remember { mutableStateOf<Triple<String, String, String>?>(null) }
+        if (showDownloadDialog != null) {
+            val dlUrl = showDownloadDialog!!.first
+            val userAgent = showDownloadDialog!!.second
+            val contentDisposition = showDownloadDialog!!.third
+            DownloadFileDialog(
+                onDismissRequest = { showDownloadDialog = null },
+                url = dlUrl,
+                userAgent = userAgent,
+                contentDisposition = contentDisposition,
+            )
+        }
+
+        var filePathCallback by remember { mutableStateOf<ValueCallback<Array<Uri>>?>(null) }
+        val filePicker =
+            rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
+                val uri = it.data?.data
+                if (uri != null) {
+                    filePathCallback?.onReceiveValue(arrayOf(uri))
+                } else
+                    filePathCallback?.onReceiveValue(null)
+
+                filePathCallback = null
+            }
+
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = {
@@ -132,7 +167,26 @@ internal fun WebView(modifier: Modifier = Modifier, url: String) {
                                 return super.shouldOverrideUrlLoading(view, request)
                             }
                         }
+
                         webChromeClient = object : WebChromeClient() {
+                            override fun onShowFileChooser(
+                                webView: WebView?,
+                                callback: ValueCallback<Array<Uri>>,
+                                fileChooserParams: FileChooserParams
+                            ): Boolean {
+                                filePathCallback = callback
+
+                                context.toast(fileChooserParams.mode.toString() + fileChooserParams.acceptTypes.contentToString())
+                                filePicker.launch(
+                                    Intent.createChooser(
+                                        fileChooserParams.createIntent(),
+                                        "Open files"
+                                    )
+                                )
+
+                                return true
+                            }
+
                             override fun onProgressChanged(view: WebView?, newProgress: Int) {
                                 super.onProgressChanged(view, newProgress)
                                 progress = newProgress
@@ -169,6 +223,18 @@ internal fun WebView(modifier: Modifier = Modifier, url: String) {
                         settings.javaScriptEnabled = true
                         settings.domStorageEnabled = true
                         settings.databaseEnabled = true
+                        settings.allowFileAccess = true
+                        settings.allowContentAccess = true
+
+                        setDownloadListener { url, userAgent, contentDisposition, mimetype, contentLength ->
+                            Log.d(
+                                "WebView",
+                                "url: $url, userAgent: $userAgent, contentDisposition: $contentDisposition, mimetype: $mimetype, contentLength: $contentLength"
+                            )
+
+                            showDownloadDialog = Triple(url, userAgent, contentDisposition)
+                        }
+
 
                         loadUrl(url)
                     }

@@ -60,4 +60,8 @@
     <string name="confirm">确定</string>
     <string name="auto_open_web">自动打开网页界面</string>
     <string name="auto_open_web_desc">打开主界面时，自动跳转到网页界面。</string>
+    <string name="download_file">下载文件</string>
+    <string name="system_downloader">系统下载器</string>
+    <string name="open_url">打开链接</string>
+    <string name="url_copied">已复制链接</string>
 </resources>
