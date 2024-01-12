@@ -10,18 +10,5 @@ object ServerConfig {
         DataSaverPreferences(app.getSharedPreferences("server", 0))
 
 
-    var port = mutableDataSaverStateOf(
-        dataSaverInterface = pref,
-        key = "port",
-        initialValue = 2344
-    )
 
-    /**
-     * 单位 秒
-     */
-    var timeout = mutableDataSaverStateOf(
-        dataSaverInterface = pref,
-        key = "timeout",
-        initialValue = 10
-    )
 }

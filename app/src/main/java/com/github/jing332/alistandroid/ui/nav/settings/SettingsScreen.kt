@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.FilePresent
 import androidx.compose.material.icons.filled.HdrAuto
 import androidx.compose.material.icons.filled.ScreenLockPortrait
 import androidx.compose.material.icons.filled.SupervisorAccount
+import androidx.compose.material.icons.filled.SystemSecurityUpdateGood
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -160,6 +161,15 @@ fun SettingsScreen() {
             checked = enabledWakeLock,
             onCheckedChange = { enabledWakeLock = it },
             icon = { Icon(Icons.Default.ScreenLockPortrait, contentDescription = null) }
+        )
+
+        var startAtBoot by remember { AppConfig.isStartAtBoot }
+        SwitchPreference(
+            title = { Text(stringResource(R.string.start_at_boot)) },
+            subTitle = { Text(stringResource(R.string.start_at_boot_desc)) },
+            checked = startAtBoot,
+            onCheckedChange = { startAtBoot = it },
+            icon = { Icon(Icons.Default.SystemSecurityUpdateGood, contentDescription = null) }
         )
 
         DividerPreference {

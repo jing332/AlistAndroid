@@ -39,4 +39,10 @@ object AppConfig {
         initialValue = ""
     )
 
+    var isStartAtBoot = mutableDataSaverStateOf(
+        dataSaverInterface = pref,
+        key = "isStartAtBoot",
+        initialValue = false
+    )
+
 }
