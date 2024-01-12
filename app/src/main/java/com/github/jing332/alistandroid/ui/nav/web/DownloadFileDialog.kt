@@ -1,30 +1,6 @@
 package com.github.jing332.alistandroid.ui.nav.web
 
-import android.app.DownloadManager
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.os.Environment
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import com.github.jing332.alistandroid.R
-import com.github.jing332.alistandroid.ui.widgets.AppDialog
-import com.github.jing332.alistandroid.util.ClipboardUtils
-import com.github.jing332.alistandroid.util.StringUtils.parseToMap
-import com.github.jing332.alistandroid.util.ToastUtils.toast
-import java.io.File
 
 @Composable
 internal fun DownloadFileDialog(
@@ -33,10 +9,14 @@ internal fun DownloadFileDialog(
     userAgent: String,
     contentDisposition: String,
 ) {
-    val context = LocalContext.current
+    DownloaderSelectionDialog(onDismissRequest = onDismissRequest, url = url)
+
+
+    /*val context = LocalContext.current
     val fileName = remember {
-        contentDisposition.parseToMap().getOrElse("filename") { "" }
-            .trim('"')
+        URLUtil.guessFileName(url, contentDisposition, null)
+//        contentDisposition.parseToMap().getOrElse("filename") { "" }
+//            .trim('"')
     }
 
     fun addSystemDownload() {
@@ -44,28 +24,26 @@ internal fun DownloadFileDialog(
             context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val request = DownloadManager.Request(Uri.parse(url))
         request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-        request.setDestinationInExternalPublicDir(
-            Environment.DIRECTORY_DOWNLOADS,
-            "AList" + File.separator + fileName
-        )
+
+        val subPath = "AList" + File.separator + fileName
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, subPath)
         request.setMimeType("")
         request.addRequestHeader("User-Agent", userAgent)
         request.setDescription(fileName)
+        request.setTitle(fileName)
+
+        Log.d("DownloadFileDialog", "addSystemDownload: $subPath")
         downloadManager.enqueue(request)
 
-        context.toast("已添加到下载管理器")
+        context.toast("已添加到下载管理器\n/内部存储/Download/AList")
     }
 
-    fun openUrl() {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        intent.resolveActivity(context.packageManager)
-
-        context.startActivity(
-            Intent.createChooser(
-                intent,
-                fileName.ifBlank { "Download file" })
+    var showDownloadSelectDialog by remember { mutableStateOf(true) }
+    if (showDownloadSelectDialog)
+        DownloaderSelectionDialog(
+            onDismissRequest = { onDismissRequest() },
+            url = url,
         )
-    }
 
     AppDialog(
         onDismissRequest = onDismissRequest,
@@ -73,14 +51,15 @@ internal fun DownloadFileDialog(
             Text(stringResource(id = R.string.download_file))
         }, content = {
             SelectionContainer {
-
                 Text(
                     modifier = Modifier.clickable {
                         ClipboardUtils.copyText(url)
                         context.toast(R.string.url_copied)
                     },
                     text = url,
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 5,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }, buttons = {
@@ -94,8 +73,7 @@ internal fun DownloadFileDialog(
                     }
 
                     TextButton(onClick = {
-                        onDismissRequest()
-                        openUrl()
+                        showDownloadSelectDialog = true
                     }) {
                         Text(stringResource(id = R.string.open_url))
                     }
@@ -108,5 +86,5 @@ internal fun DownloadFileDialog(
 
             }
         }
-    )
+    )*/
 }

@@ -30,6 +30,15 @@
         </intent>
     </queries>
 
+    <queries>
+        <intent>
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <data android:scheme="http" />
+        </intent>
+    </queries>
+
     <application
         android:name=".App"
         android:allowBackup="true"

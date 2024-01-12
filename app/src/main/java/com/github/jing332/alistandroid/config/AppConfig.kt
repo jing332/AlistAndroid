@@ -33,4 +33,10 @@ object AppConfig {
         initialValue = false
     )
 
+    var latestDownloader = mutableDataSaverStateOf(
+        dataSaverInterface = pref,
+        key = "latestDownloader",
+        initialValue = ""
+    )
+
 }

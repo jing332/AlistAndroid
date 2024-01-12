@@ -102,16 +102,17 @@ class AListService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action == ACTION_SHUTDOWN) {
+        if (isRunning) {
             AList.shutdown()
         } else {
+            toast(getString(R.string.starting))
             isRunning = true
             notifyStatusChanged()
             mScope.launch(Dispatchers.IO) {
                 val ret = AList.startup()
                 isRunning = false
                 withMain {
-                    if (ret != 0) toast("code: $ret")
+                    toast(getString(R.string.shutdowned, ret.toString()))
                     notifyStatusChanged()
                 }
             }
