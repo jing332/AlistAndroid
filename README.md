@@ -4,6 +4,9 @@
 
 #### 🚩　[FRP](https://github.com/fatedier/frp) 安卓版本：https://github.com/jing332/FrpAndroid
 
+#### 🚩　[AListFlutter](https://github.com/jing332/AListFlutter) 本项目的Flutter版本,最低支持Android 4.4
+
+
 # AlistAndroid
 
 AlistAndroid是一个基于AList的Android客户端，使用Kotlin编写，使用Jetpack Compose作为UI框架。
