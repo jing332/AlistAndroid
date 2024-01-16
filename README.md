@@ -4,7 +4,7 @@
 
 #### 🚩　[FRP](https://github.com/fatedier/frp) 安卓版本：https://github.com/jing332/FrpAndroid
 
-#### 🚩　[AListFlutter](https://github.com/jing332/AListFlutter) 本项目的Flutter版本,最低支持Android 4.4
+## 本项目已停更，请前往Flutter重制版本(安卓4.4) [AListFlutter](https://github.com/jing332/AListFlutter) 
 
 
 # AlistAndroid
